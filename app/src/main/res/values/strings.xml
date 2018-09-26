@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">SCOS</string>
+    <string name="strOrder">点菜</string>
+    <string name="strCheckOrdering">查看订单</string>
+    <string name="strLoginOrSign">登录/注册</string>
+    <string name="strHelp">系统帮助</string>
 </resources>

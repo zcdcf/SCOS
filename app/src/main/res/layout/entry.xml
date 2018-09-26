@@ -14,5 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:adjustViewBounds="true"
-        app:srcCompat="@drawable/scos_logo" />
+        app:srcCompat="@drawable/scos_logo"
+        android:contentDescription="@string/app_name"/>
+
 </RelativeLayout>
