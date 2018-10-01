@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,48 +8,116 @@
     tools:layout_editor_absoluteY="81dp">
 
 
-    <Button
-        android:id="@+id/bOrderMeal"
-        android:layout_width="120dp"
-        android:layout_height="64dp"
-        android:layout_marginTop="124dp"
-        android:text="@string/strOrder"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.50"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:id="@+id/llOrderMeal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="160dp"
+        android:layout_marginStart="@dimen/paddingLeft"
+        android:layout_marginEnd="@dimen/paddingRight">
 
-    <Button
-        android:id="@+id/bCheckOrdering"
-        android:layout_width="120dp"
-        android:layout_height="64dp"
-        android:layout_marginTop="32dp"
-        android:text="@string/strCheckOrdering"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/bOrderMeal"
-        app:layout_constraintTop_toBottomOf="@+id/bOrderMeal" />
 
-    <Button
-        android:id="@+id/bLoginOrSign"
-        android:layout_width="120dp"
-        android:layout_height="64dp"
-        android:layout_marginTop="32dp"
-        android:text="@string/strLoginOrSign"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/bCheckOrdering"
-        app:layout_constraintTop_toBottomOf="@+id/bCheckOrdering" />
+        <ImageButton
+            android:id="@+id/ibOrderMeal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/menu"
+            android:layout_weight="0.4"
+            android:layout_marginStart="@dimen/paddingLeft"
+            android:backgroundTint="@color/colorTransparent"/>
+        <Button
+            android:id="@+id/bOrderMeal"
+            android:layout_width="100dp"
+            android:layout_height="48dp"
+            android:text="@string/strOrder"
+            android:textSize="20sp"
+            android:layout_weight="0.6"
+            android:layout_marginEnd="@dimen/paddingRight"
+            android:visibility="visible" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/bHelp"
-        android:layout_width="120dp"
-        android:layout_height="64dp"
+    <LinearLayout
+        android:id="@+id/llCheckOrdering"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/llOrderMeal"
         android:layout_marginTop="32dp"
-        android:layout_marginBottom="84dp"
-        android:text="@string/strHelp"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/bLoginOrSign"
-        app:layout_constraintTop_toBottomOf="@+id/bLoginOrSign"
-        app:layout_constraintVertical_bias="0.0" />
-</android.support.constraint.ConstraintLayout>
+        android:layout_marginStart="@dimen/paddingLeft"
+        android:layout_marginEnd="@dimen/paddingRight">
+
+        <ImageButton
+            android:id="@+id/ibCheckOrdering"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/checkbox"
+            android:layout_marginStart="@dimen/paddingLeft"
+            android:layout_weight="0.4"
+            android:backgroundTint="@color/colorTransparent"/>
+
+        <Button
+            android:id="@+id/bCheckOrdering"
+            android:layout_width="100dp"
+            android:layout_height="48dp"
+            android:text="@string/strCheckOrdering"
+            android:textSize="20sp"
+            android:layout_marginEnd="@dimen/paddingRight"
+            android:layout_weight="0.6"
+            android:visibility="visible"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llLoginOrSign"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/llCheckOrdering"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="@dimen/paddingLeft"
+        android:layout_marginEnd="@dimen/paddingRight">
+
+        <ImageButton
+            android:id="@+id/ibLoginOrSign"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/login"
+            android:layout_weight="0.4"
+            android:layout_marginStart="@dimen/paddingLeft"
+            android:backgroundTint="@color/colorTransparent"/>
+
+        <Button
+            android:id="@+id/bLoginOrSign"
+            android:layout_width="100dp"
+            android:layout_height="48dp"
+            android:text="@string/strLoginOrSign"
+            android:textSize="20sp"
+            android:layout_weight="0.6"
+            android:layout_marginEnd="@dimen/paddingRight"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llHelp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/llLoginOrSign"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="@dimen/paddingLeft"
+        android:layout_marginEnd="@dimen/paddingRight">
+
+        <ImageButton
+            android:id="@+id/ibHelp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/paddingLeft"
+            android:layout_weight="0.4"
+            android:src="@drawable/help"
+            android:backgroundTint="@color/colorTransparent"/>
+        <Button
+            android:id="@+id/bHelp"
+            android:layout_width="100dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="@dimen/paddingRight"
+            android:layout_weight="0.6"
+            android:text="@string/strHelp"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -2,6 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="es.source.code.activity">
 
+    <!-- https://blog.csdn.net/u011195398/article/details/52447747 -->
+    <permission
+        android:name="scos.permission.ACCESSSCOS"
+        android:protectionLevel="dangerous" />
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,13 +26,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".MainScreen">
+        <activity
+            android:name=".MainScreen"
+            android:permission="scos.permission.ACCESSSCOS"
+            android:launchMode="singleTask">
             <intent-filter>
-                <action android:name="scos.intent.action.SCOSMAIN"/>
+                <action android:name="scos.intent.action.SCOSMAIN" />
 
-                <category android:name="scos.intent.category.MAINLAUNCHER"/>
+                <category android:name="scos.intent.category.MAINLAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".LoginOrRegister">
+
         </activity>
     </application>
 

@@ -11,6 +11,7 @@ import butterknife.OnClick;
 
 public class SCOSEntry extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,13 +34,14 @@ public class SCOSEntry extends AppCompatActivity {
             case MotionEvent.ACTION_UP:finishX = event.getX();
                                        Log.i("finishX:",finishX+" ");
                                        if( (startX-finishX)>10 ) {
-                                           String fromEntry = "";
+                                           String fromEntry = "fromEntry";
                                            Log.i("SCOSEntry:","to MainScreen");
                                            Intent intent = new Intent(SCOSEntry.this,MainScreen.class);
-                                           intent.putExtra(fromEntry,"FromEntry");
+                                           intent.putExtra(fromEntry, GlobalConst.INFO_ENTRY_TO_MAIN_SCREEN);
+                                           intent.putExtra("intentFrom",SCOSEntry.class.getName());
                                            startActivity(intent);
-                                           //https://www.jianshu.com/p/5ee0bbf8a9fd
-                                           //add transition animation
+                                               //https://www.jianshu.com/p/5ee0bbf8a9fd
+                                               //add transition animation
                                            overridePendingTransition(R.anim.in_from_right,R.anim.out_to_left);
                                            SCOSEntry.this.finish();
                                        }
