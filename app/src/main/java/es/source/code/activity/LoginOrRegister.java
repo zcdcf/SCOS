@@ -70,22 +70,22 @@ public class LoginOrRegister extends AppCompatActivity {
                 pbShowLogin.setVisibility(View.VISIBLE);
                 break;
             case R.id.bReturn:
-                Intent intent = new Intent();
-                intent.putExtra("infoReturnFromLogin",GlobalConst.INFO_RETURN_TO_MAINSCREEN_FROM_LOGIN);
-                if(userPasswordIsRight&&userNameIsRight) {
-                    setResult(GlobalConst.LOGIN_SUCCESS_RESULT_CODE,intent);
-                } else {
-                    setResult(GlobalConst.LOGIN_RETURN_RESULT_CODE,intent);
-                }
                 onBackPressed();
-                overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
                 break;
         }
     }
 
     @Override
     public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("infoReturnFromLogin",GlobalConst.INFO_RETURN_TO_MAINSCREEN_FROM_LOGIN);
+        if(userPasswordIsRight&&userNameIsRight) {
+            setResult(GlobalConst.LOGIN_SUCCESS_RESULT_CODE,intent);
+        } else {
+            setResult(GlobalConst.LOGIN_RETURN_RESULT_CODE,intent);
+        }
         super.onBackPressed();
+        overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
     }
 
 
