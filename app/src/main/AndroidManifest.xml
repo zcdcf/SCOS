@@ -28,11 +28,10 @@
         </activity>
         <activity
             android:name=".MainScreen"
-            android:permission="scos.permission.ACCESSSCOS"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="scos.intent.action.SCOSMAIN" />
-
+                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="scos.intent.category.MAINLAUNCHER" />
             </intent-filter>
         </activity>

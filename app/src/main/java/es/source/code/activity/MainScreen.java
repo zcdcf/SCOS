@@ -41,7 +41,7 @@ public class MainScreen extends AppCompatActivity {
         Intent intent = getIntent();
         String activityName = intent.getStringExtra("intentFrom");
 
-        if(activityName.equals(SCOSEntry.class.getName())) {
+        if(activityName!=null&& activityName.equals(SCOSEntry.class.getName())) {
             String strFromEntry = intent.getStringExtra("fromEntry");
 
                 //https://blog.csdn.net/maxbyzhou/article/details/52157234
@@ -51,6 +51,11 @@ public class MainScreen extends AppCompatActivity {
                 ibOrderMeal.setVisibility(View.INVISIBLE);
                 ibCheckOrdering.setVisibility(View.INVISIBLE);
             }
+        } else {
+            bOrderMeal.setVisibility(View.INVISIBLE);
+            bCheckOrdering.setVisibility(View.INVISIBLE);
+            ibOrderMeal.setVisibility(View.INVISIBLE);
+            ibCheckOrdering.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -79,7 +84,7 @@ public class MainScreen extends AppCompatActivity {
 
     private boolean loginSuccess = false;
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode==GlobalConst.MAINSCREEN_REQUEST_CODE && loginSuccess==false) {
+        if(requestCode==GlobalConst.MAINSCREEN_REQUEST_CODE && !loginSuccess) {
             if(resultCode==GlobalConst.LOGIN_RETURN_RESULT_CODE) {
                 bOrderMeal.setVisibility(View.INVISIBLE);
                 bCheckOrdering.setVisibility((View.INVISIBLE));
