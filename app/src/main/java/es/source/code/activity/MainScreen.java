@@ -1,16 +1,12 @@
 package es.source.code.activity;
 
-import android.app.LauncherActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.Button;
+import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
@@ -22,16 +18,29 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static es.source.code.activity.R.layout.activity_main_screen_gridview_item;
-
 public class MainScreen extends AppCompatActivity {
 
     @BindView(R.id.gvMainScreenNav)
     GridView gvMainScreenNav;
 
 
-    private int[] navItemIcon = {R.drawable.checkbox_png, R.drawable.formatlist_png, R.drawable.help_png, R.drawable.login_png};
-    private String[] navItemName = {"点菜", "查看订单", "登录/注册", "帮助"};
+    private int[] navItemIcon = {R.drawable.login_png, R.drawable.help_png, R.drawable.checkbox_png, R.drawable.formatlist_png };
+    private String[] navItemName = {"登录/注册", "帮助", "点菜", "查看订单"};
+
+    private List<Map<String, Object>> navLists = new ArrayList<Map<String, Object>>();
+
+    private void initData(List<Map<String,Object>> navLists) {
+        for (int j = 0; j < navItemIcon.length; j++) {
+            Map<String, Object> navItem = new HashMap<String, Object>();
+            navItem.put("icon", navItemIcon[j]);
+            navItem.put("name", navItemName[j]);
+            navLists.add(navItem);
+        }
+    }
+
+    private String[] from = {"icon", "name"};
+    private int[] to = {R.id.ibGridViewItemImage, R.id.bGridViewItemButton};
+    SimpleAdapter simpleAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,31 +53,35 @@ public class MainScreen extends AppCompatActivity {
         Intent intent = getIntent();
         String activityName = intent.getStringExtra("intentFrom");
 
-        List<Map<String, Object>> navLists = new ArrayList<Map<String, Object>>();
-        for (int j = 0; j < navItemIcon.length; j++) {
-            Map<String, Object> navItem = new HashMap<String, Object>();
-            navItem.put("icon", navItemIcon[j]);
-            navItem.put("name", navItemName[j]);
-            navLists.add(navItem);
-        }
+        initData(navLists);
 
-        String [] from = {"icon","name"};
-        int [] to = {R.id.ibGridViewItemImage,R.id.bGridViewItemButton};
-
-        if(activityName.equals(SCOSEntry.class.getName())) {
+        if (activityName != null && activityName.equals(SCOSEntry.class.getName())) {
             String strFromEntry = intent.getStringExtra("fromEntry");
 
             //https://blog.csdn.net/maxbyzhou/article/details/52157234
             if (!strFromEntry.equals(GlobalConst.INFO_ENTRY_TO_MAIN_SCREEN)) {
-                gvMainScreenNav.setAdapter(new SimpleAdapter(this,navLists.subList(2,4),R.layout.activity_main_screen_gridview_item,from,to));
+                simpleAdapter = new SimpleAdapter(this, navLists.subList(0, 2), R.layout.activity_main_screen_gridview_item, from, to);
+                gvMainScreenNav.setAdapter(simpleAdapter);
             } else {
-                gvMainScreenNav.setAdapter(new SimpleAdapter(this,navLists,R.layout.activity_main_screen_gridview_item,from,to));
+                simpleAdapter = new SimpleAdapter(this, navLists, R.layout.activity_main_screen_gridview_item, from, to);
+                gvMainScreenNav.setAdapter(simpleAdapter);
             }
+        } else {
+            simpleAdapter = new SimpleAdapter(this, navLists.subList(0, 2), R.layout.activity_main_screen_gridview_item, from, to);
+            gvMainScreenNav.setAdapter(simpleAdapter);
         }
 
-
-
-
+        gvMainScreenNav.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:Intent intent = new Intent(MainScreen.this,LoginOrRegister.class);
+                           startActivityForResult(intent, GlobalConst.MAINSCREEN_REQUEST_CODE);
+                           overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
+                           break;
+                }
+            }
+        });
     }
 
     @Override
@@ -85,9 +98,28 @@ public class MainScreen extends AppCompatActivity {
         this.finish();
     }
 
-
     private boolean loginSuccess = false;
 
-    public void
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode==GlobalConst.MAINSCREEN_REQUEST_CODE && !loginSuccess) {
+            if(resultCode==GlobalConst.LOGIN_RETURN_RESULT_CODE) {
+                if(navLists.size()==4) {
+                    navLists.remove(3);
+                    navLists.remove(2);
+                    simpleAdapter.notifyDataSetChanged();
+                }
+
+            } else if(resultCode==GlobalConst.LOGIN_SUCCESS_RESULT_CODE || loginSuccess) {
+                    for(int i = 2;i<navItemIcon.length;i++){
+                        Map<String, Object> navItem = new HashMap<String, Object>();
+                        navItem.put("icon", navItemIcon[i]);
+                        navItem.put("name", navItemName[i]);
+                        navLists.add(navItem);
+                    }
+                    simpleAdapter.notifyDataSetChanged();
+                }
+            }
+        }
+
 
 }
