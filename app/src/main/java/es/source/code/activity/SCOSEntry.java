@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import butterknife.ButterKnife;
-import butterknife.OnClick;
+import es.source.code.model.GlobalConst;
 
 public class SCOSEntry extends AppCompatActivity {
 

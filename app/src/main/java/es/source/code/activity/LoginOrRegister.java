@@ -3,19 +3,17 @@ package es.source.code.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.constraint.solver.GoalRow;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
-import butterknife.BindFont;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
+import es.source.code.model.GlobalConst;
 
 public class LoginOrRegister extends AppCompatActivity {
 

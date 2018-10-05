@@ -1,4 +1,4 @@
-package es.source.code.activity;
+package es.source.code.model;
 
 public class GlobalConst {
     public static final String INFO_ENTRY_TO_MAIN_SCREEN = "FromEntry";

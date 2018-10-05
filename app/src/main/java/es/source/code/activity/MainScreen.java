@@ -16,7 +16,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
+import es.source.code.model.GlobalConst;
 
 public class MainScreen extends AppCompatActivity {
 
