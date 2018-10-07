@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import es.source.code.model.GlobalConst;
+import es.source.code.model.User;
 
 public class MainScreen extends AppCompatActivity {
 
@@ -24,12 +26,12 @@ public class MainScreen extends AppCompatActivity {
     GridView gvMainScreenNav;
 
 
-    private int[] navItemIcon = {R.drawable.login_png, R.drawable.help_png, R.drawable.checkbox_png, R.drawable.formatlist_png };
+    private int[] navItemIcon = {R.drawable.login_png, R.drawable.help_png, R.drawable.checkbox_png, R.drawable.formatlist_png};
     private String[] navItemName = {"登录/注册", "帮助", "点菜", "查看订单"};
 
     private List<Map<String, Object>> navLists = new ArrayList<Map<String, Object>>();
 
-    private void initData(List<Map<String,Object>> navLists) {
+    private void initData(List<Map<String, Object>> navLists) {
         for (int j = 0; j < navItemIcon.length; j++) {
             Map<String, Object> navItem = new HashMap<String, Object>();
             navItem.put("icon", navItemIcon[j]);
@@ -75,10 +77,16 @@ public class MainScreen extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
-                    case 0:Intent intent = new Intent(MainScreen.this,LoginOrRegister.class);
-                           startActivityForResult(intent, GlobalConst.MAINSCREEN_REQUEST_CODE);
-                           overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
-                           break;
+                    case 0:
+                        Intent intent = new Intent(MainScreen.this, LoginOrRegister.class);
+                        startActivityForResult(intent, GlobalConst.MAINSCREEN_REQUEST_CODE);
+                        overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
+                        break;
+                    case 2:
+                        Intent intent1 = new Intent(MainScreen.this, FoodView.class);
+                        startActivity(intent1);
+                        overridePendingTransition(R.anim.in_from_right,R.anim.out_to_left);
+                        break;
                 }
             }
         });
@@ -99,27 +107,42 @@ public class MainScreen extends AppCompatActivity {
     }
 
     private boolean loginSuccess = false;
+    private User user;
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode==GlobalConst.MAINSCREEN_REQUEST_CODE && !loginSuccess) {
-            if(resultCode==GlobalConst.LOGIN_RETURN_RESULT_CODE) {
-                if(navLists.size()==4) {
+        String infoFromLoginOrRegister = data.getStringExtra("infoFromLogin");
+        Log.i("infoFromLoginOrRegister:", infoFromLoginOrRegister);
+        if (requestCode == GlobalConst.MAINSCREEN_REQUEST_CODE) {
+            if (infoFromLoginOrRegister.equals(GlobalConst.INFO_RETURN_TO_MAINSCREEN_FROM_LOGIN)) {
+                if (navLists.size() == 4) {
                     navLists.remove(3);
                     navLists.remove(2);
                     simpleAdapter.notifyDataSetChanged();
                 }
-
-            } else if(resultCode==GlobalConst.LOGIN_SUCCESS_RESULT_CODE || loginSuccess) {
-                    for(int i = 2;i<navItemIcon.length;i++){
-                        Map<String, Object> navItem = new HashMap<String, Object>();
-                        navItem.put("icon", navItemIcon[i]);
-                        navItem.put("name", navItemName[i]);
-                        navLists.add(navItem);
-                    }
-                    simpleAdapter.notifyDataSetChanged();
+                user = null;
+            } else if (infoFromLoginOrRegister.equals(GlobalConst.INFO_LOGIN_SUCCESS_TO_MAINSCREEN_FROM_LOGIN)) {
+                if (navLists.size() != navItemIcon.length) {
+                    addGridViewItems();
                 }
+                user = (User) data.getSerializableExtra("infoLoginUser");
+            } else if (infoFromLoginOrRegister.equals(GlobalConst.INFO_REGISTER_SUCCESS_TO_MAINSCREEN_FROM_LOGIN)) {
+                if (navLists.size() != navItemIcon.length) {
+                    addGridViewItems();
+                }
+                user = (User) data.getSerializableExtra("infoLoginUser");
+                Toast toast = Toast.makeText(this,"欢迎您成为SCOS新用户",Toast.LENGTH_SHORT);
+                toast.show();
             }
         }
+    }
 
-
+    private void addGridViewItems () {
+        for (int i = 2; i < navItemIcon.length; i++) {
+            Map<String, Object> navItem = new HashMap<String, Object>();
+            navItem.put("icon", navItemIcon[i]);
+            navItem.put("name", navItemName[i]);
+            navLists.add(navItem);
+        }
+        simpleAdapter.notifyDataSetChanged();
+    }
 }

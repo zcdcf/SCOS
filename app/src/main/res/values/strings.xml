@@ -4,4 +4,7 @@
     <string name="strCheckOrdering">查看订单</string>
     <string name="strLoginOrSign">登录/注册</string>
     <string name="strHelp">系统帮助</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

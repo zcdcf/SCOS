@@ -14,6 +14,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import es.source.code.model.GlobalConst;
+import es.source.code.model.User;
 
 public class LoginOrRegister extends AppCompatActivity {
 
@@ -48,38 +49,56 @@ public class LoginOrRegister extends AppCompatActivity {
             pbShowLogin.setProgress(100);
             pbShowLogin.setVisibility(View.INVISIBLE);
             progressbarNum = 0;
-            if(userNameIsRight&&userPasswordIsRight) {
-                Intent intent = new Intent();
-                intent.putExtra("infoFromLogin",GlobalConst.Info_Login_SUCCESS_TO_MAINSCREEN_FROM_LOGOIN);
-                setResult(GlobalConst.LOGIN_SUCCESS_RESULT_CODE,intent);
+            if(userNameIsRight && userPasswordIsRight && loginSuccess) {
                 onBackPressed();
-                overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
             }
         }
     };
 
     int progressbarNum = 0;
+    boolean loginSuccess = false;
+    boolean registerSuccess = false;
 
-    @OnClick({R.id.bLogin, R.id.bReturn})
+    @OnClick({R.id.bLogin, R.id.bReturn, R.id.bRegister})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bLogin:
                 countDownTimer.start();
                 pbShowLogin.setVisibility(View.VISIBLE);
+                if(userPasswordIsRight && userNameIsRight) {
+                    loginSuccess = true;
+                }
                 break;
             case R.id.bReturn:
                 onBackPressed();
                 break;
+            case  R.id.bRegister:
+                if(userNameIsRight && userPasswordIsRight) {
+                    registerSuccess = true;
+                    onBackPressed();
+                }
         }
     }
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent();
-        intent.putExtra("infoReturnFromLogin",GlobalConst.INFO_RETURN_TO_MAINSCREEN_FROM_LOGIN);
-        if(userPasswordIsRight&&userNameIsRight) {
-            setResult(GlobalConst.LOGIN_SUCCESS_RESULT_CODE,intent);
+        if(userPasswordIsRight && userNameIsRight && (loginSuccess || registerSuccess)) {
+            if(loginSuccess) {
+                User loginUser = new User(userName, password, GlobalConst.IS_OLD_USER);
+                Intent intent = new Intent();
+                intent.putExtra("infoFromLogin", GlobalConst.INFO_LOGIN_SUCCESS_TO_MAINSCREEN_FROM_LOGIN);
+                intent.putExtra("infoLoginUser", loginUser);
+                setResult(GlobalConst.LOGIN_SUCCESS_RESULT_CODE, intent);
+            } else if(registerSuccess) {
+                User loginUser = new User(userName, password, GlobalConst.NOT_OLD_USER);
+                Intent intent = new Intent();
+                intent.putExtra("infoFromLogin", GlobalConst.INFO_REGISTER_SUCCESS_TO_MAINSCREEN_FROM_LOGIN);
+                intent.putExtra("infoLoginUser", loginUser);
+                setResult(GlobalConst.REGISTER_SUCCESS_RESULT_CODE, intent);
+            }
         } else {
+            Intent intent = new Intent();
+            intent.putExtra("infoFromLogin", GlobalConst.INFO_RETURN_TO_MAINSCREEN_FROM_LOGIN);
             setResult(GlobalConst.LOGIN_RETURN_RESULT_CODE,intent);
         }
         super.onBackPressed();
@@ -90,23 +109,28 @@ public class LoginOrRegister extends AppCompatActivity {
     private boolean userNameIsRight = false;
     private boolean userPasswordIsRight = false;
 
+    String userName;
+    String password;
+
     @OnTextChanged({R.id.etUserName,R.id.etUserPassword})
     public void onTextChanged() {
         View rootView = this.getWindow().getDecorView();
         int focusId = rootView.findFocus().getId();
         switch (focusId) {
             case R.id.etUserName: {
-                if (checkFormat(etUserName.getText().toString())) {
+                if (checkFormat(userName = etUserName.getText().toString())) {
                     userNameIsRight = true;
                 } else {
                     etUserName.setError("格式错误：请输入字母或数字，且不含空格");
+                    userNameIsRight = false;
                 }
             }
             case R.id.etUserPassword: {
-                if (checkFormat(etUserPassword.getText().toString())) {
+                if (checkFormat(password = etUserPassword.getText().toString())) {
                     userPasswordIsRight = true;
                 } else {
                     etUserPassword.setError("格式错误：请输入字母或数字，且不含空格");
+                    userPasswordIsRight = false;
                 }
             }
         }
