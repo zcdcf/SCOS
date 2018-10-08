@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menuItemOderedMeal"
+        android:id="@+id/menuItemSubmitted"
         android:orderInCategory="100"
         android:title="已点菜品"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/menuItemCheckOrdering"
+        android:id="@+id/menuItemOrderedMeal"
         android:orderInCategory="100"
         android:title="查看订单"
         app:showAsAction="never"/>

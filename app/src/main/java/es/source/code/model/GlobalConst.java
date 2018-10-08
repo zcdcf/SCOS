@@ -11,4 +11,14 @@ public class GlobalConst {
     public static final String INFO_REGISTER_SUCCESS_TO_MAINSCREEN_FROM_LOGIN = "RegisterSuccess";
     public static final boolean IS_OLD_USER = true;
     public static final boolean NOT_OLD_USER = false;
+    public static final int TYPE_COLD_MEAL = 0;
+    public static final int TYPE_HOT_MEAL = 1;
+    public static final int TYPE_SEA_FOOD = 2;
+    public static final int TYPE_LIQUOR = 3;
+    public static final int ORDERED = 1;
+    public static final int UNORDERED = 0;
+    public static final int SUBMITTED = 1;
+    public static final int NOT_SUBMITTED = 0;
+    public static final int pageSubmittedMeals = 0;
+    public static final int pageOrderedMeals = 1;
 }

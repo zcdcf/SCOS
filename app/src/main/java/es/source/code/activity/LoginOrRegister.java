@@ -90,10 +90,10 @@ public class LoginOrRegister extends AppCompatActivity {
                 intent.putExtra("infoLoginUser", loginUser);
                 setResult(GlobalConst.LOGIN_SUCCESS_RESULT_CODE, intent);
             } else if(registerSuccess) {
-                User loginUser = new User(userName, password, GlobalConst.NOT_OLD_USER);
+                User registerUser = new User(userName, password, GlobalConst.NOT_OLD_USER);
                 Intent intent = new Intent();
                 intent.putExtra("infoFromLogin", GlobalConst.INFO_REGISTER_SUCCESS_TO_MAINSCREEN_FROM_LOGIN);
-                intent.putExtra("infoLoginUser", loginUser);
+                intent.putExtra("infoLoginUser", registerUser);
                 setResult(GlobalConst.REGISTER_SUCCESS_RESULT_CODE, intent);
             }
         } else {

@@ -25,6 +25,7 @@ public class MealFragment extends Fragment {
     Unbinder unbinder;
 
     private ArrayList<Food> foods;
+    private String pageTitle;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -39,8 +40,9 @@ public class MealFragment extends Fragment {
         Bundle bundle = getArguments();
         if (bundle == null) throw new AssertionError();
         foods = bundle.getParcelableArrayList("foodsData");
+        pageTitle = bundle.getString("pageTitle");
 
-        FoodRecyclerViewAdapter adapter = new FoodRecyclerViewAdapter(getContext(), foods);
+        FoodRecyclerViewAdapter adapter = new FoodRecyclerViewAdapter(getContext(), foods, pageTitle);
         rvColdMeal.setAdapter(adapter);
         return view;
     }
