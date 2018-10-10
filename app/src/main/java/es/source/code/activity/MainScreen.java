@@ -46,16 +46,10 @@ public class MainScreen extends AppCompatActivity {
 
                 //https://blog.csdn.net/maxbyzhou/article/details/52157234
             if (!strFromEntry.equals(GlobalConst.INFO_ENTRY_TO_MAIN_SCREEN)) {
-                bOrderMeal.setVisibility(View.INVISIBLE);
-                bCheckOrdering.setVisibility(View.INVISIBLE);
-                ibOrderMeal.setVisibility(View.INVISIBLE);
-                ibCheckOrdering.setVisibility(View.INVISIBLE);
+                hideButtons();
             }
         } else {
-            bOrderMeal.setVisibility(View.INVISIBLE);
-            bCheckOrdering.setVisibility(View.INVISIBLE);
-            ibOrderMeal.setVisibility(View.INVISIBLE);
-            ibCheckOrdering.setVisibility(View.INVISIBLE);
+            hideButtons();
         }
     }
 
@@ -67,10 +61,8 @@ public class MainScreen extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(MainScreen.this, SCOSEntry.class);
-        startActivity(intent);
+        super.onBackPressed();
         overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
-        this.finish();
     }
 
 
@@ -85,19 +77,25 @@ public class MainScreen extends AppCompatActivity {
     private boolean loginSuccess = false;
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode==GlobalConst.MAINSCREEN_REQUEST_CODE && !loginSuccess) {
-            if(resultCode==GlobalConst.LOGIN_RETURN_RESULT_CODE) {
-                bOrderMeal.setVisibility(View.INVISIBLE);
-                bCheckOrdering.setVisibility((View.INVISIBLE));
-                ibCheckOrdering.setVisibility(View.INVISIBLE);
-                ibOrderMeal.setVisibility(View.INVISIBLE);
-            } else if(resultCode==GlobalConst.LOGIN_SUCCESS_RESULT_CODE || loginSuccess) {
-                bOrderMeal.setVisibility(View.VISIBLE);
-                bCheckOrdering.setVisibility((View.VISIBLE));
-                ibCheckOrdering.setVisibility(View.VISIBLE);
-                ibOrderMeal.setVisibility(View.VISIBLE);
+            if(resultCode==GlobalConst.LOGIN_SUCCESS_RESULT_CODE || loginSuccess) {
+                showButtons();
                 loginSuccess = true;
             }
         }
+    }
+
+    private void showButtons() {
+        bOrderMeal.setVisibility(View.VISIBLE);
+        bCheckOrdering.setVisibility((View.VISIBLE));
+        ibCheckOrdering.setVisibility(View.VISIBLE);
+        ibOrderMeal.setVisibility(View.VISIBLE);
+    }
+
+    private void hideButtons() {
+        bOrderMeal.setVisibility(View.INVISIBLE);
+        bCheckOrdering.setVisibility((View.INVISIBLE));
+        ibCheckOrdering.setVisibility(View.INVISIBLE);
+        ibOrderMeal.setVisibility(View.INVISIBLE);
     }
 
 }

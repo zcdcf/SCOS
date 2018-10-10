@@ -43,17 +43,11 @@ public class SCOSEntry extends AppCompatActivity {
                                                //https://www.jianshu.com/p/5ee0bbf8a9fd
                                                //add transition animation
                                            overridePendingTransition(R.anim.in_from_right,R.anim.out_to_left);
-                                           SCOSEntry.this.finish();
                                        }
                                        break;
         }
 
         return false;
-    }
-
-    @Override
-    public void onBackPressed() {
-        this.finish();
     }
 
 }

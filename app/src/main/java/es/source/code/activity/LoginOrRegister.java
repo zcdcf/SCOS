@@ -72,11 +72,7 @@ public class LoginOrRegister extends AppCompatActivity {
             case R.id.bReturn:
                 Intent intent = new Intent();
                 intent.putExtra("infoReturnFromLogin",GlobalConst.INFO_RETURN_TO_MAINSCREEN_FROM_LOGIN);
-                if(userPasswordIsRight&&userNameIsRight) {
-                    setResult(GlobalConst.LOGIN_SUCCESS_RESULT_CODE,intent);
-                } else {
-                    setResult(GlobalConst.LOGIN_RETURN_RESULT_CODE,intent);
-                }
+                setResult(GlobalConst.LOGIN_RETURN_RESULT_CODE,intent);
                 onBackPressed();
                 overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
                 break;
@@ -101,6 +97,7 @@ public class LoginOrRegister extends AppCompatActivity {
                 if (checkFormat(etUserName.getText().toString())) {
                     userNameIsRight = true;
                 } else {
+                    userNameIsRight = false;
                     etUserName.setError("格式错误：请输入字母或数字，且不含空格");
                 }
             }
@@ -108,6 +105,7 @@ public class LoginOrRegister extends AppCompatActivity {
                 if (checkFormat(etUserPassword.getText().toString())) {
                     userPasswordIsRight = true;
                 } else {
+                    userPasswordIsRight = false;
                     etUserPassword.setError("格式错误：请输入字母或数字，且不含空格");
                 }
             }
