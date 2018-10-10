@@ -25,7 +25,6 @@ public class MainScreen extends AppCompatActivity {
     @BindView(R.id.gvMainScreenNav)
     GridView gvMainScreenNav;
 
-
     private int[] navItemIcon = {R.drawable.login_png, R.drawable.help_png, R.drawable.checkbox_png, R.drawable.formatlist_png};
     private String[] navItemName = {"登录/注册", "帮助", "点菜", "查看订单"};
 
@@ -69,7 +68,8 @@ public class MainScreen extends AppCompatActivity {
                 gvMainScreenNav.setAdapter(simpleAdapter);
             }
         } else {
-            simpleAdapter = new SimpleAdapter(this, navLists.subList(0, 2), R.layout.activity_main_screen_gridview_item, from, to);
+            navLists = navLists.subList(0, 2);
+            simpleAdapter = new SimpleAdapter(this, navLists, R.layout.activity_main_screen_gridview_item, from, to);
             gvMainScreenNav.setAdapter(simpleAdapter);
         }
 
@@ -84,15 +84,15 @@ public class MainScreen extends AppCompatActivity {
                         break;
                     case 2:
                         Intent intent1 = new Intent(MainScreen.this, FoodView.class);
-                        intent1.putExtra("userInfo",user);
+                        intent1.putExtra("userInfo", user);
                         startActivity(intent1);
-                        overridePendingTransition(R.anim.in_from_right,R.anim.out_to_left);
+                        overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
                         break;
                     case 3:
-                        Intent intent2 = new Intent(MainScreen.this,FoodOrderView.class);
-                        intent2.putExtra("userInfo",user);
+                        Intent intent2 = new Intent(MainScreen.this, FoodOrderView.class);
+                        intent2.putExtra("userInfo", user);
                         startActivity(intent2);
-                        overridePendingTransition(R.anim.in_from_right,R.anim.out_to_left);
+                        overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
                         break;
                 }
             }
@@ -107,10 +107,8 @@ public class MainScreen extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(MainScreen.this, SCOSEntry.class);
-        startActivity(intent);
+        super.onBackPressed();
         overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
-        this.finish();
     }
 
     private boolean loginSuccess = false;
@@ -121,12 +119,9 @@ public class MainScreen extends AppCompatActivity {
         Log.i("infoFromLoginOrRegister:", infoFromLoginOrRegister);
         if (requestCode == GlobalConst.MAINSCREEN_REQUEST_CODE) {
             if (infoFromLoginOrRegister.equals(GlobalConst.INFO_RETURN_TO_MAINSCREEN_FROM_LOGIN)) {
-                if (navLists.size() == 4) {
-                    navLists.remove(3);
-                    navLists.remove(2);
-                    simpleAdapter.notifyDataSetChanged();
+                if (!loginSuccess) {
+                    user = null;
                 }
-                user = null;
             } else if (infoFromLoginOrRegister.equals(GlobalConst.INFO_LOGIN_SUCCESS_TO_MAINSCREEN_FROM_LOGIN)) {
                 if (navLists.size() != navItemIcon.length) {
                     addGridViewItems();
@@ -137,13 +132,13 @@ public class MainScreen extends AppCompatActivity {
                     addGridViewItems();
                 }
                 user = (User) data.getSerializableExtra("infoLoginUser");
-                Toast toast = Toast.makeText(this,"欢迎您成为SCOS新用户",Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(this, "欢迎您成为SCOS新用户", Toast.LENGTH_SHORT);
                 toast.show();
             }
         }
     }
 
-    private void addGridViewItems () {
+    private void addGridViewItems() {
         for (int i = 2; i < navItemIcon.length; i++) {
             Map<String, Object> navItem = new HashMap<String, Object>();
             navItem.put("icon", navItemIcon[i]);

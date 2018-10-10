@@ -27,7 +27,8 @@
         <activity
             android:name=".MainScreen"
             android:exported="true"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:permission="scos.permission.ACCESSSCOS">
             <intent-filter>
                 <action android:name="scos.intent.action.SCOSMAIN" />
 
