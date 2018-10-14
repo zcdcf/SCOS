@@ -3,6 +3,8 @@ package es.source.code.model;
 import android.app.Application;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import es.source.code.activity.R;
 
@@ -15,6 +17,8 @@ public class MenuData extends Application {
     private int[][] foodImageID= {{R.drawable.cold_fungus,R.drawable.duck_tongue},{R.drawable.braised_beef,R.drawable.son_chicken},
         {R.drawable.meat_crab,R.drawable.pipixia},{R.drawable.yellow_wine,R.drawable.beer}};
     static private int foodNums = 0;
+    private ArrayList<Food> submittedFoodList = new ArrayList<>();
+    private ArrayList<Food> orderedFoodList = new ArrayList<>();
 
     @Override
     public void onCreate() {
@@ -23,7 +27,6 @@ public class MenuData extends Application {
     }
 
     public ArrayList<ArrayList<Food>> getFoodLists() {
-        initData();
         return foodLists;
     }
 
@@ -47,37 +50,75 @@ public class MenuData extends Application {
     }
 
     public void setOrdered(String mealType, int position) {
-        foodLists.get(changePageTitleToNum(mealType)).get(position).setOrdered();
+        Food food = foodLists.get(changePageTitleToNum(mealType)).get(position);
+        food.setOrdered();
     }
 
     public void setOrdered(int mealType, int position) {
-        foodLists.get(mealType).get(position).setOrdered();
+        Food food = foodLists.get(mealType).get(position);
+        food.setOrdered();
     }
 
+    public void updateOrderedFoodlist(Food food, int operation) {
+        if(operation==GlobalConst.ADD_ITEM) {
+            orderedFoodList.add(food);
+        } else if(operation==GlobalConst.DELETE_ITEM) {
+            for(int i=0; i<orderedFoodList.size();i++) {
+                if(orderedFoodList.get(i).getName().equals(food.getName())) {
+                    orderedFoodList.remove(i);
+                }
+            }
+        }
+    }
     public void setUnOrdered(String mealType, int position) {
-        foodLists.get(changePageTitleToNum(mealType)).get(position).setUnOrdered();
+        Food food = foodLists.get(changePageTitleToNum(mealType)).get(position);
+        food.setUnOrdered();
     }
 
     public void setUnOrdered(int mealType, int position) {
-        foodLists.get(mealType).get(position).setUnOrdered();
+        Food food = foodLists.get(mealType).get(position);
+        food.setUnOrdered();
     }
 
+    public ArrayList<Food> getOrderedFoodlist() {
+        return orderedFoodList;
+    }
     public void setSubmited(String mealType, int position) {
-        foodLists.get(changePageTitleToNum(mealType)).get(position).setSubmited();
+        Food food = foodLists.get(changePageTitleToNum(mealType)).get(position);
+        food.setSubmited();
     }
 
     public void setSubmited(int mealType, int position) {
-        foodLists.get(mealType).get(position).setSubmited();
+        Food food = foodLists.get(mealType).get(position);
+        food.setSubmited();
+    }
+
+    public ArrayList<Food> getSubmittedFoodlist() {
+        return submittedFoodList;
+    }
+
+    public void updateSubmittedFoodlist(Food food, int operation) {
+        if(operation==GlobalConst.ADD_ITEM) {
+            submittedFoodList.add(food);
+        } else if(operation==GlobalConst.DELETE_ITEM) {
+            for(int i=0; i<submittedFoodList.size();i++) {
+                if(submittedFoodList.get(i).getName().equals(food.getName())) {
+                    submittedFoodList.remove(i);
+                }
+            }
+        }
     }
 
     public void setUnSubmited(String mealType, int position) {
-        foodLists.get(changePageTitleToNum(mealType)).get(position).setUnSubmited();
-        foodLists.get(changePageTitleToNum(mealType)).get(position).setUnOrdered();
+        Food food = foodLists.get(changePageTitleToNum(mealType)).get(position);
+        food.setUnSubmited();
+        food.setUnOrdered();
     }
 
     public void setUnSubmited(int mealType, int position) {
-        foodLists.get(mealType).get(position).setUnSubmited();
-        foodLists.get(mealType).get(position).setUnOrdered();
+        Food food = foodLists.get(mealType).get(position);
+        food.setUnSubmited();
+        food.setUnOrdered();
     }
 
     public Food getFood(String mealType, int position) {

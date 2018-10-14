@@ -21,4 +21,6 @@ public class GlobalConst {
     public static final int NOT_SUBMITTED = 0;
     public static final int pageSubmittedMeals = 0;
     public static final int pageOrderedMeals = 1;
+    public static final int ADD_ITEM = 1;
+    public static final int DELETE_ITEM = 0;
 }
