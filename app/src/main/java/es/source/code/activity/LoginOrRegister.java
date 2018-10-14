@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,6 +52,9 @@ public class LoginOrRegister extends AppCompatActivity {
             progressbarNum = 0;
             if(userNameIsRight && userPasswordIsRight && loginSuccess) {
                 onBackPressed();
+            } else {
+                Toast toast = Toast.makeText(LoginOrRegister.this,"登录失败",Toast.LENGTH_SHORT);
+                toast.show();
             }
         }
     };
