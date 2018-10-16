@@ -1,6 +1,8 @@
 package es.source.code.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -25,6 +27,8 @@ public class MainScreen extends AppCompatActivity {
     @BindView(R.id.gvMainScreenNav)
     GridView gvMainScreenNav;
 
+    SharedPreferences userState = null;
+
     private int[] navItemIcon = {R.drawable.login_png, R.drawable.help_png, R.drawable.checkbox_png, R.drawable.formatlist_png};
     private String[] navItemName = {"登录/注册", "帮助", "点菜", "查看订单"};
 
@@ -48,6 +52,8 @@ public class MainScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
         ButterKnife.bind(this);
+
+        userState = getSharedPreferences("user",Context.MODE_PRIVATE);
 
         Log.i("current state", "onCreate");
 
@@ -111,29 +117,26 @@ public class MainScreen extends AppCompatActivity {
         overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
     }
 
-    private boolean loginSuccess = false;
     private User user;
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         String infoFromLoginOrRegister = data.getStringExtra("infoFromLogin");
+        userState = getSharedPreferences("user",Context.MODE_PRIVATE);
         Log.i("infoFromLoginOrRegister:", infoFromLoginOrRegister);
         if (requestCode == GlobalConst.MAINSCREEN_REQUEST_CODE) {
             if (infoFromLoginOrRegister.equals(GlobalConst.INFO_RETURN_TO_MAINSCREEN_FROM_LOGIN)) {
-                if (!loginSuccess) {
+                if (userState.getInt("loginState",0)==GlobalConst.LOGIN_FAILED_STATE) {
                     user = null;
                 }
-            } else if (infoFromLoginOrRegister.equals(GlobalConst.INFO_LOGIN_SUCCESS_TO_MAINSCREEN_FROM_LOGIN)) {
+            } else if (userState.getInt("loginState",0)==GlobalConst.LOGIN_SUCCESS_STATE) {
                 if (navLists.size() != navItemIcon.length) {
                     addGridViewItems();
                 }
                 user = (User) data.getSerializableExtra("infoLoginUser");
-            } else if (infoFromLoginOrRegister.equals(GlobalConst.INFO_REGISTER_SUCCESS_TO_MAINSCREEN_FROM_LOGIN)) {
-                if (navLists.size() != navItemIcon.length) {
-                    addGridViewItems();
+                if(infoFromLoginOrRegister.equals(GlobalConst.INFO_REGISTER_SUCCESS_TO_MAINSCREEN_FROM_LOGIN)) {
+                    Toast toast = Toast.makeText(this, "欢迎您成为SCOS新用户", Toast.LENGTH_SHORT);
+                    toast.show();
                 }
-                user = (User) data.getSerializableExtra("infoLoginUser");
-                Toast toast = Toast.makeText(this, "欢迎您成为SCOS新用户", Toast.LENGTH_SHORT);
-                toast.show();
             }
         }
     }

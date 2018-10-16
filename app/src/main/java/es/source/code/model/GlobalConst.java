@@ -23,4 +23,6 @@ public class GlobalConst {
     public static final int pageOrderedMeals = 1;
     public static final int ADD_ITEM = 1;
     public static final int DELETE_ITEM = 0;
+    public static final int LOGIN_SUCCESS_STATE = 1;
+    public static final int LOGIN_FAILED_STATE = 1;
 }
