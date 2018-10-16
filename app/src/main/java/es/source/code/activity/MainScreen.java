@@ -88,6 +88,11 @@ public class MainScreen extends AppCompatActivity {
                         startActivityForResult(intent, GlobalConst.MAINSCREEN_REQUEST_CODE);
                         overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
                         break;
+                    case 1:
+                        Intent intent3 = new Intent(MainScreen.this,SCOSHelper.class);
+                        startActivity(intent3);
+                        overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
+                        break;
                     case 2:
                         Intent intent1 = new Intent(MainScreen.this, FoodView.class);
                         intent1.putExtra("userInfo", user);

@@ -9,6 +9,9 @@
         android:name="scos.permission.ACCESSSCOS"
         android:protectionLevel="normal" />
 
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+
     <application
         android:name="es.source.code.model.MenuData"
         android:allowBackup="true"
@@ -39,7 +42,8 @@
         <activity android:name=".LoginOrRegister" />
         <activity android:name=".FoodView" />
         <activity android:name=".FoodOrderView" />
-        <activity android:name=".FoodDetailed"></activity>
+        <activity android:name=".FoodDetailed" />
+        <activity android:name=".SCOSHelper"></activity>
     </application>
 
 </manifest>
