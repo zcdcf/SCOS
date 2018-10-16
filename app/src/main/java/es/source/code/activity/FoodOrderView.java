@@ -84,6 +84,9 @@ public class FoodOrderView extends AppCompatActivity {
         tabIndicator.addAll(Arrays.asList(tabNames));
 
         ArrayList<ArrayList<Food>> foodLists = menuData.getFoodLists();
+        unOrderedFoodLists = menuData.getSubmittedFoodlist();
+        orderedFoodLists = menuData.getOrderedFoodlist();
+        /*
         for(int i=0; i<foodLists.size(); i++) {
             for(int j=0; j<foodLists.get(i).size(); j++) {
                 if(foodLists.get(i).get(j).getOrdered()==GlobalConst.ORDERED) {
@@ -93,6 +96,7 @@ public class FoodOrderView extends AppCompatActivity {
                 }
             }
         }
+        */
 
         UnOrderedMealFragment unOrderedMealFragment = new UnOrderedMealFragment();
         Bundle bundle = new Bundle();

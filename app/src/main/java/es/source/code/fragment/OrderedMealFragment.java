@@ -79,12 +79,9 @@ public class OrderedMealFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        newFoods = refreshData();
-        if(!newFoods.equals(foods)) {
-            foods =newFoods;
-            adapter.notifyDataSetChanged();
-        }
+        adapter.notifyDataSetChanged();
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

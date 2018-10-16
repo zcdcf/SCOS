@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -20,15 +21,19 @@ import es.source.code.model.Food;
 import es.source.code.model.MenuData;
 
 public class UnOrderedFoodRecyclerViewAdapter extends RecyclerView.Adapter<es.source.code.adapter.UnOrderedFoodRecyclerViewAdapter.ViewHolder> {
-    private List<Food> foods;
+    private ArrayList<Food> foods;
     private Context context;
     private String pageTitle;
     private MenuData menuData;
+    private TextView tvPrice;
+    private TextView tvCount;
 
-    public UnOrderedFoodRecyclerViewAdapter(Context context, List<Food> foods, String pageTitle) {
+    public UnOrderedFoodRecyclerViewAdapter(Context context, ArrayList<Food> foods, String pageTitle, TextView tvPrice, TextView tvCount) {
         this.context = context;
         this.foods = foods;
         this.pageTitle = pageTitle;
+        this.tvPrice = tvPrice;
+        this.tvCount = tvCount;
     }
 
     private Context getContext() {
@@ -62,7 +67,10 @@ public class UnOrderedFoodRecyclerViewAdapter extends RecyclerView.Adapter<es.so
                         toast.show();
                         menuData.setUnSubmited(food.getType(),food.getPosition());
                         menuData.minusCount(food.getType(),food.getPosition());
-                        foods.remove(position);
+//                        foods.remove(position);
+                        double price = calTotalPrice(foods);
+                        tvPrice.setText("订单总价："+String.valueOf(price));
+                        tvCount.setText("菜品总数："+foods.size());
                         notifyDataSetChanged();
                     }
                 }
@@ -104,5 +112,17 @@ public class UnOrderedFoodRecyclerViewAdapter extends RecyclerView.Adapter<es.so
         public void onClick(View v) {
 
         }
+    }
+
+    private double calTotalPrice(ArrayList<Food> foods) {
+        double totalPrice = 0;
+        if (foods == null) {
+            totalPrice = 0;
+        } else {
+            for (int i = 0; i < foods.size(); i++) {
+                totalPrice += foods.get(i).getPrice();
+            }
+        }
+        return totalPrice;
     }
 }

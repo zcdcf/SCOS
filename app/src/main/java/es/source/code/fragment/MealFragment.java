@@ -17,6 +17,7 @@ import butterknife.Unbinder;
 import es.source.code.activity.R;
 import es.source.code.model.Food;
 import es.source.code.adapter.FoodRecyclerViewAdapter;
+import es.source.code.model.MenuData;
 
 public class MealFragment extends Fragment {
 
@@ -26,6 +27,8 @@ public class MealFragment extends Fragment {
 
     private ArrayList<Food> foods;
     private String pageTitle;
+    private MenuData menuData;
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -33,6 +36,7 @@ public class MealFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_meal, container, false);
         unbinder = ButterKnife.bind(this, view);
 
+        menuData = (MenuData) getContext().getApplicationContext();
         LinearLayoutManager llm = new LinearLayoutManager(this.getContext());
         rvColdMeal.setHasFixedSize(true);
         rvColdMeal.setLayoutManager(llm);
@@ -44,6 +48,7 @@ public class MealFragment extends Fragment {
 
         FoodRecyclerViewAdapter adapter = new FoodRecyclerViewAdapter(getContext(), foods, pageTitle);
         rvColdMeal.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
         return view;
     }
 
@@ -52,5 +57,4 @@ public class MealFragment extends Fragment {
         super.onDestroyView();
         unbinder.unbind();
     }
-
 }

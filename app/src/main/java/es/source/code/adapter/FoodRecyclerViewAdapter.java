@@ -124,7 +124,6 @@ public class FoodRecyclerViewAdapter extends RecyclerView.Adapter<FoodRecyclerVi
         }
     }
 
-
 }
 
 

@@ -1,6 +1,7 @@
 package es.source.code.model;
 
 import android.app.Application;
+import android.support.constraint.solver.GoalRow;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,11 +53,17 @@ public class MenuData extends Application {
     public void setOrdered(String mealType, int position) {
         Food food = foodLists.get(changePageTitleToNum(mealType)).get(position);
         food.setOrdered();
+        food.setUnSubmited();
+        updateSubmittedFoodlist(food,GlobalConst.DELETE_ITEM);
+        updateOrderedFoodlist(food,GlobalConst.ADD_ITEM);
     }
 
     public void setOrdered(int mealType, int position) {
         Food food = foodLists.get(mealType).get(position);
         food.setOrdered();
+        food.setUnSubmited();
+        updateSubmittedFoodlist(food,GlobalConst.DELETE_ITEM);
+        updateOrderedFoodlist(food,GlobalConst.ADD_ITEM);
     }
 
     public void updateOrderedFoodlist(Food food, int operation) {
@@ -86,11 +93,13 @@ public class MenuData extends Application {
     public void setSubmited(String mealType, int position) {
         Food food = foodLists.get(changePageTitleToNum(mealType)).get(position);
         food.setSubmited();
+        updateSubmittedFoodlist(food,GlobalConst.ADD_ITEM);
     }
 
     public void setSubmited(int mealType, int position) {
         Food food = foodLists.get(mealType).get(position);
         food.setSubmited();
+        updateSubmittedFoodlist(food,GlobalConst.ADD_ITEM);
     }
 
     public ArrayList<Food> getSubmittedFoodlist() {
@@ -112,13 +121,13 @@ public class MenuData extends Application {
     public void setUnSubmited(String mealType, int position) {
         Food food = foodLists.get(changePageTitleToNum(mealType)).get(position);
         food.setUnSubmited();
-        food.setUnOrdered();
+        updateSubmittedFoodlist(food,GlobalConst.DELETE_ITEM);
     }
 
     public void setUnSubmited(int mealType, int position) {
         Food food = foodLists.get(mealType).get(position);
         food.setUnSubmited();
-        food.setUnOrdered();
+        updateSubmittedFoodlist(food,GlobalConst.DELETE_ITEM);
     }
 
     public Food getFood(String mealType, int position) {
@@ -151,4 +160,6 @@ public class MenuData extends Application {
         }
         return -1;
     }
+
+
 }

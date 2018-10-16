@@ -61,7 +61,7 @@ public class UnOrderedMealFragment extends Fragment {
         }
 
         tvMealTotalPriceUn.setText("订单总价" + calTotalPrice(foods));
-        UnOrderedFoodRecyclerViewAdapter adapter = new UnOrderedFoodRecyclerViewAdapter(getContext(), foods, pageTitle);
+        UnOrderedFoodRecyclerViewAdapter adapter = new UnOrderedFoodRecyclerViewAdapter(getContext(), foods, pageTitle, tvMealTotalPriceUn, tvMealTotalCountUn);
         rvUnOrderedMeal.setAdapter(adapter);
         return view;
     }
