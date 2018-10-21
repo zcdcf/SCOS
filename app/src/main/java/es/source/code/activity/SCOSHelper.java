@@ -1,6 +1,7 @@
 package es.source.code.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -9,17 +10,24 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.se.omapi.Session;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
-import android.telephony.gsm.GsmCellLocation;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
+
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.HtmlEmail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,18 +68,36 @@ public class SCOSHelper extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
-                    case 2:
+                    case 2://Phone
                         if (ContextCompat.checkSelfPermission(SCOSHelper.this, Manifest.permission.CALL_PHONE)==PackageManager.PERMISSION_GRANTED) {
                             call();
                         } else {
                             ActivityCompat.requestPermissions(SCOSHelper.this,new String[]{Manifest.permission.CALL_PHONE},GlobalConst.CALL_PHONE_PERMISSION_REQUEST_CODE);
                         }
                         break;
-                    case 3:
+                    case 3://SMS
                         if (ContextCompat.checkSelfPermission(SCOSHelper.this,Manifest.permission.SEND_SMS)==PackageManager.PERMISSION_GRANTED) {
                             sendMessage();
                         } else {
                             ActivityCompat.requestPermissions(SCOSHelper.this,new String[]{Manifest.permission.SEND_SMS},GlobalConst.SMS_PERMISSION_REQUEST_CODE);
+                        }
+                        break;
+                    case 4://mail
+                        if (ContextCompat.checkSelfPermission(SCOSHelper.this,Manifest.permission.INTERNET)==PackageManager.PERMISSION_GRANTED) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Log.i("in thread:",Thread.currentThread().getName());
+                                        sendMail();
+                                        handler.sendEmptyMessage(1);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }).start();
+                        } else {
+                            ActivityCompat.requestPermissions(SCOSHelper.this,new String[]{Manifest.permission.SEND_SMS},GlobalConst.INTERNET_PERMISSION_REQUEST_CODE);
                         }
                 }
             }
@@ -106,6 +132,26 @@ public class SCOSHelper extends AppCompatActivity {
                     sendMessage();
                 } else {
                     Toast toast = Toast.makeText(this,GlobalConst.SEND_SMS_PERMISSION_DENIED_INFO,Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+                return;
+            }
+            case GlobalConst.INTERNET_PERMISSION_REQUEST_CODE: {
+                if (grantResults.length>0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                sendMail();
+                                handler.sendEmptyMessage(1);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                } else {
+                    Toast toast = Toast.makeText(this,GlobalConst.INTERNET_PERMISSION_DENIED_INFO,Toast.LENGTH_SHORT);
                     toast.show();
                 }
                 return;
@@ -164,4 +210,38 @@ public class SCOSHelper extends AppCompatActivity {
             }
         }
     }
+
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(msg.what==1) {
+                Toast toast = Toast.makeText(SCOSHelper.this,"邮件发送成功",Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
+    };
+
+    private void sendMail() {
+        HtmlEmail email = new HtmlEmail();
+        try {
+            Log.i("send state:","start sending");
+            email.setHostName("smtp.163.com");
+            email.setSmtpPort(465);
+            email.setAuthentication("zcdcffh@163.com", "");
+            email.setCharset("gbk");
+            email.addTo("712402268@qq.com");
+            email.setFrom("zcdcffh@163.com");
+            email.setSubject("SCOS");
+            email.setMsg("help");
+            Log.i("send state","have set information");
+            email.send();
+            Log.i("send state:","Send finish");
+        } catch (EmailException e) {
+            Log.i("send state","something wrong");
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -1,5 +1,6 @@
 package es.source.code.fragment;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -88,8 +89,10 @@ public class UnOrderedMealFragment extends Fragment {
     public void onViewClicked() {
         for(int i=0; i<foods.size(); i++) {
             menuData.setOrdered(foods.get(i).getType(),foods.get(i).getPosition());
+            i--;  //because the size of the foods is decrease in Menudata
         }
         Toast toast = Toast.makeText(getContext(),"订单提交成功",Toast.LENGTH_SHORT);
         toast.show();
     }
+
 }

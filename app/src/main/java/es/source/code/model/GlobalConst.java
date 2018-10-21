@@ -28,10 +28,12 @@ public class GlobalConst {
 
     public static final int CALL_PHONE_PERMISSION_REQUEST_CODE = 1;
     public static final int SMS_PERMISSION_REQUEST_CODE = 2;
+    public static final int INTERNET_PERMISSION_REQUEST_CODE = 3;
 
     public static final String HELP_PHONE_NUMBER = "5554";
 
     public static final String CALL_PHONE_PERMISSION_DENIED_INFO  = "拨号请求被拒绝";
     public static final String SEND_SMS_PERMISSION_DENIED_INFO  = "发送短信请求被拒绝";
+    public static final String INTERNET_PERMISSION_DENIED_INFO = "使用网络请求被拒绝";
     public static final String SMS_CONTENT = "test scos helper";
 }

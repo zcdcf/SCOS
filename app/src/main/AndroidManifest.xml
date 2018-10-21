@@ -7,10 +7,11 @@
     <!-- https://blog.csdn.net/u011195398/article/details/52447747 -->
     <permission
         android:name="scos.permission.ACCESSSCOS"
-        android:protectionLevel="normal" />
+        android:protectionLevel="dangerous" />
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:name="es.source.code.model.MenuData"
