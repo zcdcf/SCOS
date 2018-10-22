@@ -227,12 +227,12 @@ public class SCOSHelper extends AppCompatActivity {
         HtmlEmail email = new HtmlEmail();
         try {
             Log.i("send state:","start sending");
-            email.setHostName("smtp.163.com");
-            email.setSmtpPort(465);
-            email.setAuthentication("zcdcffh@163.com", "");
-            email.setCharset("gbk");
-            email.addTo("712402268@qq.com");
-            email.setFrom("zcdcffh@163.com");
+            email.setHostName("smtp.qq.com");
+            email.setSmtpPort(587);
+            email.setAuthentication("712402268@qq.com", "xxxx");
+            email.setCharset("utf-8");
+            email.addTo("zcdcffh@163.com");
+            email.setFrom("712402268@qq.com");
             email.setSubject("SCOS");
             email.setMsg("help");
             Log.i("send state","have set information");
