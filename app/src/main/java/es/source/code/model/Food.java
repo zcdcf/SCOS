@@ -15,6 +15,7 @@ public class Food implements Parcelable {
     private int imageId;
     private int foodID;
     private int position;
+    private int stock = 3;
 
     public Food(String name, double price, int type, int imageId, int position, int foodID) {
         this.name = name;
@@ -31,6 +32,7 @@ public class Food implements Parcelable {
         type = in.readInt();
         ordered = in.readInt();
         count = in.readInt();
+        stock = in.readInt();
     }
 
     public static final Creator<Food> CREATOR = new Creator<Food>() {
@@ -124,6 +126,21 @@ public class Food implements Parcelable {
         return this.foodID;
     }
 
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public void increaseStock() {
+        stock++;
+    }
+
+    public void decreaseStock() {
+        stock--;
+    }
 
     public void minusCount() {
         if(this.count>0) {
@@ -149,5 +166,6 @@ public class Food implements Parcelable {
         dest.writeInt(type);
         dest.writeInt(ordered);
         dest.writeInt(count);
+        dest.writeInt(stock);
     }
 }

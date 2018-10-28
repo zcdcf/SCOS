@@ -14,6 +14,7 @@ import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Messenger;
 import android.se.omapi.Session;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -39,6 +40,7 @@ import es.source.code.model.GlobalConst;
 
 public class SCOSHelper extends AppCompatActivity {
 
+    public static final int MAIL_SEND_SUCCESS = 1;
     @BindView(R.id.gvHelpItem)
     GridView gvHelpItem;
 
@@ -83,12 +85,14 @@ public class SCOSHelper extends AppCompatActivity {
                         }
                         break;
                     case 4://mail
+                        final int testThread = 3;
                         if (ContextCompat.checkSelfPermission(SCOSHelper.this,Manifest.permission.INTERNET)==PackageManager.PERMISSION_GRANTED) {
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
                                     try {
                                         Log.i("in thread:",Thread.currentThread().getName());
+                                        Log.i("get testThread ",String.valueOf(testThread));
                                         sendMail();
                                         handler.sendEmptyMessage(1);
                                     } catch (Exception e) {
@@ -216,7 +220,7 @@ public class SCOSHelper extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if(msg.what==1) {
+            if(msg.what== MAIL_SEND_SUCCESS) {
                 Toast toast = Toast.makeText(SCOSHelper.this,"邮件发送成功",Toast.LENGTH_SHORT);
                 toast.show();
             }

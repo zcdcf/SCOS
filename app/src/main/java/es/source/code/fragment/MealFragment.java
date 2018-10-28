@@ -17,6 +17,7 @@ import butterknife.Unbinder;
 import es.source.code.activity.R;
 import es.source.code.model.Food;
 import es.source.code.adapter.FoodRecyclerViewAdapter;
+import es.source.code.model.FoodStockInfo;
 import es.source.code.model.MenuData;
 
 public class MealFragment extends Fragment {
@@ -29,6 +30,7 @@ public class MealFragment extends Fragment {
     private String pageTitle;
     private MenuData menuData;
 
+    private FoodRecyclerViewAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,7 +48,7 @@ public class MealFragment extends Fragment {
         foods = bundle.getParcelableArrayList("foodsData");
         pageTitle = bundle.getString("pageTitle");
 
-        FoodRecyclerViewAdapter adapter = new FoodRecyclerViewAdapter(getContext(), foods, pageTitle);
+        adapter = new FoodRecyclerViewAdapter(getContext(), foods, pageTitle);
         rvColdMeal.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         return view;
@@ -56,5 +58,12 @@ public class MealFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    public void refreshData(ArrayList<FoodStockInfo> foodStockInfoArrayList) {
+        for(int i=0; i<foodStockInfoArrayList.size(); i++) {
+            foods.get(i).setStock(foodStockInfoArrayList.get(i).getStock());
+        }
+        adapter.notifyDataSetChanged();
     }
 }

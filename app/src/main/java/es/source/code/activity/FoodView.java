@@ -1,28 +1,41 @@
 package es.source.code.activity;
 
+import android.annotation.SuppressLint;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import es.source.code.adapter.FoodRecyclerViewAdapter;
 import es.source.code.fragment.MealFragment;
 import es.source.code.model.Food;
+import es.source.code.model.FoodStockInfo;
 import es.source.code.model.GlobalConst;
 import es.source.code.model.MenuData;
 import es.source.code.model.User;
+import es.source.code.service.SeverObserverService;
 
 public class FoodView extends AppCompatActivity {
 
@@ -72,8 +85,38 @@ public class FoodView extends AppCompatActivity {
 
         tlFoodType.setupWithViewPager(vpFoodInfo);
 
+        bindSeverObserverService();
     }
 
+    private void bindSeverObserverService() {
+        Log.i("FoodView state:","bind SeverObserverService");
+        Intent intent2 = new Intent(this,SeverObserverService.class);
+        bindService(intent2, connection, BIND_AUTO_CREATE);
+    }
+
+    Messenger serviceMessenger;
+    Messenger activityMessenger;
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            serviceMessenger = new Messenger(service);
+            Log.i("FoodView State:","get Service messenger");
+            activityMessenger = new Messenger(sMessageHandler);
+            Message msg = new Message();
+            msg.what = GlobalConst.BIND_MSG;
+            msg.replyTo = activityMessenger;
+            try {
+                serviceMessenger.send(msg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 
     @Override
     public void onBackPressed() {
@@ -113,6 +156,30 @@ public class FoodView extends AppCompatActivity {
     }
 
 
+    @SuppressLint("HandlerLeak")
+    private Handler sMessageHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Log.i("FoodView state:", "start to handle message");
+            if(msg.what==10) {
+                Log.i("FoodView state:", "get update info");
+                Bundle bundle = msg.getData();
+                ArrayList<ArrayList<FoodStockInfo>> foodStockList = new ArrayList<>();
+                for(int i=0; i<bundle.size(); i++) {
+                    foodStockList.add((ArrayList<FoodStockInfo>) bundle.get(String.valueOf(i)));
+                }
+
+                refreshData(foodStockList);
+                for(int i=0; i<foodStockList.size(); i++) {
+                    for(int j=0; j<foodStockList.get(i).size(); j++) {
+                        FoodStockInfo foodStock= foodStockList.get(i).get(j);
+                        Log.i("stockInfo:",foodStock.getFoodName()+" "+foodStock.getStock());
+                    }
+                }
+            }
+        }
+    };
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -129,25 +196,50 @@ public class FoodView extends AppCompatActivity {
                 startActivity(intent1);
                 break;
             case R.id.menuItemHelp:break;
+            case R.id.menuUpdate:
+                if(item.getTitle().equals(getString(R.string.startUpdate))) {
+                    Log.i("FoodView state:","start updating");
+                    Message msgStart = new Message();
+                    msgStart.what = GlobalConst.START_UPDATE_FOODINFO;
+                    try {
+                        serviceMessenger.send(msgStart);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    item.setTitle(R.string.stopUpdate);
+                } else {
+                    Log.i("FoodVIew state:","stop updating");
+                    item.setTitle(R.string.startUpdate);
+                    Message msgStop = new Message();
+                    msgStop.what = GlobalConst.STOP_UPDATE_FOODINFO;
+                    try {
+                        serviceMessenger.send(msgStop);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
-    /*
-    //已用全局变量实现
-    ArrayList<ArrayList<Food>> foodLists = new ArrayList<>();
-    String[][] MealNames = {{"凉拌木耳","鸭舌"},{"红烧牛肉","童子鸡"},{"肉蟹煲","啤酒皮皮虾"},{"黄酒","啤酒"}};
-    double[][] MealPrice = {{12, 16},{36,40},{40,60},{20,10}};
 
-    private void initData() {
-        for(int i=0; i<tabName.length;i++) {
-            ArrayList<Food> foodsInfo = new ArrayList<>();
-            for (int j = 0; j < MealNames[i].length; j++) {
-                Food foodInfo = new Food(MealNames[i][j],MealPrice[i][j]);
-                foodsInfo.add(foodInfo);
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i("FoodView state:","unBind SeverObserverService");
+        unbindService(connection);
+    }
+
+    private void refreshData(ArrayList<ArrayList<FoodStockInfo>> foodStockList) {
+        for(int i=0; i<foodStockList.size(); i++) {
+            for(int j=0; j<foodStockList.get(i).size(); j++) {
+                menuData.setStock(i,j,foodStockList.get(i).get(j).getStock());
             }
-            foodLists.add(foodsInfo);
+            if(vpFoodInfo.getCurrentItem() == i) {
+                fragmentLists.get(i).refreshData(foodStockList.get(i));
+                Log.i("Page", String.valueOf(i) + " data has refreshed");
+            }
         }
     }
-    */
 }

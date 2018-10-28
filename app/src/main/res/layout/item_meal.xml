@@ -25,6 +25,15 @@
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceMedium"/>
 
+    <TextView
+        android:id="@+id/tvStockNum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:gravity="center"
+        android:layout_weight="0.4"
+        android:textAppearance="@style/stockTheme"/>
+
     <Button
         android:id="@+id/bOrderThisMeal"
         android:layout_width="match_parent"

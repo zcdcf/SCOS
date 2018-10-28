@@ -4,14 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,8 +21,6 @@ import es.source.code.activity.R;
 import es.source.code.model.Food;
 import es.source.code.model.GlobalConst;
 import es.source.code.model.MenuData;
-
-import static android.support.v4.content.ContextCompat.startActivity;
 
 public class FoodRecyclerViewAdapter extends RecyclerView.Adapter<FoodRecyclerViewAdapter.ViewHolder> {
     private List<Food> foods;
@@ -58,28 +53,38 @@ public class FoodRecyclerViewAdapter extends RecyclerView.Adapter<FoodRecyclerVi
 
         holder.tvMealName.setText(food.getName());
         holder.tvMealPrice.setText(String.valueOf(food.getPrice()));
+        holder.tvStockNum.setText(String.valueOf(food.getStock()));
 
-        if(menuData.getFood(pageTitle,position).getSubmited()==GlobalConst.SUBMITTED) {
+        if (menuData.getFood(pageTitle, position).getSubmited() == GlobalConst.SUBMITTED) {
             holder.bOrderThisMeal.setText("退菜");
         } else {
             holder.bOrderThisMeal.setText("点菜");
         }
 
+        if(menuData.getFood(pageTitle,position).getStock() == 0) {
+            holder.bOrderThisMeal.setClickable(false);
+        } else {
+            holder.bOrderThisMeal.setClickable(true);
+        }
         holder.bOrderThisMeal.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(holder.bOrderThisMeal.getText().equals("点菜")) {
+                if (holder.bOrderThisMeal.getText().equals("点菜")) {
                     Toast toast = Toast.makeText(getContext(), "点菜成功", Toast.LENGTH_SHORT);
                     toast.show();
                     holder.bOrderThisMeal.setText("退菜");
-                    menuData.setSubmited(pageTitle,position);
-                    menuData.addCount(pageTitle,position);
-                } else if(holder.bOrderThisMeal.getText().equals("退菜")) {
+                    menuData.setSubmited(pageTitle, position);
+                    menuData.addCount(pageTitle, position);
+                    menuData.decreaseStock(pageTitle, position);
+                    notifyDataSetChanged();
+                } else if (holder.bOrderThisMeal.getText().equals("退菜")) {
                     Toast toast = Toast.makeText(getContext(), "退菜成功", Toast.LENGTH_SHORT);
                     toast.show();
                     holder.bOrderThisMeal.setText("点菜");
-                    menuData.setUnSubmited(pageTitle,position);
-                    menuData.minusCount(pageTitle,position);
+                    menuData.setUnSubmited(pageTitle, position);
+                    menuData.minusCount(pageTitle, position);
+                    menuData.increaseStock(pageTitle, position);
+                    notifyDataSetChanged();
                 }
             }
         });
@@ -97,6 +102,8 @@ public class FoodRecyclerViewAdapter extends RecyclerView.Adapter<FoodRecyclerVi
         TextView tvMealName;
         @BindView(R.id.tvMealPrice)
         TextView tvMealPrice;
+        @BindView(R.id.tvStockNum)
+        TextView tvStockNum;
 
         ViewHolder(View view) {
             super(view);
@@ -108,15 +115,15 @@ public class FoodRecyclerViewAdapter extends RecyclerView.Adapter<FoodRecyclerVi
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            if(v.getId()==R.id.bOrderThisMeal) {
+            if (v.getId() == R.id.bOrderThisMeal) {
                 /*
                 Toast toast = Toast.makeText(getContext(), "点菜成功", Toast.LENGTH_SHORT);
                 toast.show();
                 */
             } else {
-                Intent intent  = new Intent(context,FoodDetailed.class);
+                Intent intent = new Intent(context, FoodDetailed.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                intent.putExtra("page",menuData.getFood(pageTitle,position).getFoodID());
+                intent.putExtra("page", menuData.getFood(pageTitle, position).getFoodID());
                 context.startActivity(intent);
                 Toast toast = Toast.makeText(getContext(), "点菜", Toast.LENGTH_SHORT);
                 toast.show();

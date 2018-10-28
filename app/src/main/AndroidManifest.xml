@@ -31,7 +31,6 @@
         <activity
             android:name=".MainScreen"
             android:exported="true"
-            android:launchMode="singleTask"
             android:permission="scos.permission.ACCESSSCOS">
             <intent-filter>
                 <action android:name="scos.intent.action.SCOSMAIN" />
@@ -44,7 +43,11 @@
         <activity android:name=".FoodView" />
         <activity android:name=".FoodOrderView" />
         <activity android:name=".FoodDetailed" />
-        <activity android:name=".SCOSHelper"></activity>
+        <activity android:name=".SCOSHelper"/>
+        <service
+            android:name="es.source.code.service.SeverObserverService"
+            android:process="es.source.code.observerservice"
+            />
     </application>
 
 </manifest>

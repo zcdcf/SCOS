@@ -7,4 +7,9 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="startUpdate">启动实时更新</string>
+    <string name="stopUpdate">停止实时更新</string>
+    <string name="callService">呼叫服务</string>
+    <string name="checkOrdered">查看订单</string>
+    <string name="checkSubmitted">已点菜品</string>
 </resources>

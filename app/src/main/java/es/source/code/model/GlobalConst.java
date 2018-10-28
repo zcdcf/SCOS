@@ -36,4 +36,9 @@ public class GlobalConst {
     public static final String SEND_SMS_PERMISSION_DENIED_INFO  = "发送短信请求被拒绝";
     public static final String INTERNET_PERMISSION_DENIED_INFO = "使用网络请求被拒绝";
     public static final String SMS_CONTENT = "test scos helper";
+
+    public static final int BIND_MSG = 2;
+    public static final int START_UPDATE_FOODINFO = 1;
+    public static final int STOP_UPDATE_FOODINFO = 0;
+    public static final int STOCK_HAS_UPDATE = 10;
 }

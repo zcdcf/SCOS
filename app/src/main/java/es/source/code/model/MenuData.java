@@ -20,6 +20,7 @@ public class MenuData extends Application {
     static private int foodNums = 0;
     private ArrayList<Food> submittedFoodList = new ArrayList<>();
     private ArrayList<Food> orderedFoodList = new ArrayList<>();
+    private boolean foodSepciesUpdate = false;
 
     @Override
     public void onCreate() {
@@ -150,6 +151,31 @@ public class MenuData extends Application {
         foodLists.get(mealType).get(position).setRemark(remark);
     }
 
+    public void decreaseStock(String mealType, int position) {
+        foodLists.get(changePageTitleToNum(mealType)).get(position).decreaseStock();
+    }
+
+    public void increaseStock(String mealType, int position) {
+        foodLists.get(changePageTitleToNum(mealType)).get(position).increaseStock();
+    }
+
+    public void setStock(int mealType, int position, int stock) {
+        foodLists.get(mealType).get(position).setStock(stock);
+    }
+
+    public ArrayList<ArrayList<String>> getFoodNameList() {
+        ArrayList<ArrayList<String>> foodNameList = new ArrayList<>();
+        for(int i=0; i<foodLists.size(); i++) {
+            ArrayList<String> arrayList = new ArrayList<>();
+            for(int j=0; j<foodLists.get(i).size(); j++) {
+                arrayList.add(foodLists.get(i).get(j).getName());
+            }
+            foodNameList.add(arrayList);
+        }
+
+        return foodNameList;
+    }
+
     private int changePageTitleToNum(String mealType) {
         switch (mealType) {
             case "冷菜":return GlobalConst.TYPE_COLD_MEAL;
@@ -162,4 +188,11 @@ public class MenuData extends Application {
     }
 
 
+    public boolean isFoodSepciesUpdate() {
+        return foodSepciesUpdate;
+    }
+
+    public void setFoodSepciesUpdate(boolean foodSepciesUpdate) {
+        this.foodSepciesUpdate = foodSepciesUpdate;
+    }
 }

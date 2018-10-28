@@ -5,19 +5,25 @@
     <item
         android:id="@+id/menuItemSubmitted"
         android:orderInCategory="100"
-        android:title="已点菜品"
+        android:title="@string/checkSubmitted"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/menuItemOrderedMeal"
         android:orderInCategory="100"
-        android:title="查看订单"
+        android:title="@string/checkOrdered"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/menuItemHelp"
         android:orderInCategory="100"
-        android:title="呼叫服务"
+        android:title="@string/callService"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menuUpdate"
+        android:orderInCategory="100"
+        android:title="@string/startUpdate"
         app:showAsAction="never"/>
 
 </menu>
