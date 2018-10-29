@@ -41,4 +41,35 @@ public class GlobalConst {
     public static final int START_UPDATE_FOODINFO = 1;
     public static final int STOP_UPDATE_FOODINFO = 0;
     public static final int STOCK_HAS_UPDATE = 10;
+    public static final int FOODNAME_HAS_SEND = 4;
+    public static final int REQUIRE_FOODNAME = 3;
+
+    public static class NewFoodMessageEvent {
+
+        boolean hasNewFood;
+        Food newFood;
+
+        public NewFoodMessageEvent(boolean hasNewFood, Food newFood) {
+            this.hasNewFood = hasNewFood;
+            this.newFood = newFood;
+        }
+
+        public boolean isHasNewFood() {
+            return hasNewFood;
+        }
+
+        public void setHasNewFood(boolean hasNewFood) {
+            this.hasNewFood = hasNewFood;
+        }
+
+        public Food getNewFood() {
+            return newFood;
+        }
+
+        public void setNewFood(Food newFood) {
+            this.newFood = newFood;
+        }
+
+
+    }
 }

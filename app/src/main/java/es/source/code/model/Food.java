@@ -126,6 +126,9 @@ public class Food implements Parcelable {
         return this.foodID;
     }
 
+    public void setFoodID(int foodID) {
+        this.foodID = foodID;
+    }
     public int getStock() {
         return stock;
     }

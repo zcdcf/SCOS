@@ -233,7 +233,7 @@ public class SCOSHelper extends AppCompatActivity {
             Log.i("send state:","start sending");
             email.setHostName("smtp.qq.com");
             email.setSmtpPort(587);
-            email.setAuthentication("712402268@qq.com", "xxxx");
+            email.setAuthentication("712402268@qq.com", "fsbtifsgkdktbcjc");
             email.setCharset("utf-8");
             email.addTo("zcdcffh@163.com");
             email.setFrom("712402268@qq.com");

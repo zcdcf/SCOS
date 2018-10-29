@@ -2,6 +2,7 @@ package es.source.code.model;
 
 import android.app.Application;
 import android.support.constraint.solver.GoalRow;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,13 +11,14 @@ import java.util.Map;
 import es.source.code.activity.R;
 
 public class MenuData extends Application {
+
     private String[][] mealNames = {{"凉拌木耳","鸭舌"},{"红烧牛肉","童子鸡"},{"肉蟹煲","皮皮虾"},{"黄酒","啤酒"}};
-    private double[][] mealPrice = {{12, 16},{36,40},{40,60},{20,10}};
     private int[][] mealType = {{0,0},{1,1},{2,2},{3,3}};
     private ArrayList<ArrayList<Food>> foodLists = new ArrayList<>();
+    private ArrayList<ArrayList<String>> foodNameLists = new ArrayList<>();
     private boolean hasInitialized =false;
     private int[][] foodImageID= {{R.drawable.cold_fungus,R.drawable.duck_tongue},{R.drawable.braised_beef,R.drawable.son_chicken},
-        {R.drawable.meat_crab,R.drawable.pipixia},{R.drawable.yellow_wine,R.drawable.beer}};
+            {R.drawable.meat_crab,R.drawable.pipixia},{R.drawable.yellow_wine,R.drawable.beer}};
     static private int foodNums = 0;
     private ArrayList<Food> submittedFoodList = new ArrayList<>();
     private ArrayList<Food> orderedFoodList = new ArrayList<>();
@@ -34,18 +36,25 @@ public class MenuData extends Application {
 
     public void addNewFood(Food food) {
         foodLists.get(food.getType()).add(food);
+        foodNameLists.get(food.getType()).add(food.getName());
+        refreshFoodID();
+        Log.i("foodNameList size = ", String.valueOf(foodNameLists.get(food.getType()).size()));
     }
 
     private void initData() {
         if(!hasInitialized) {
             for (int i = 0; i < mealNames.length; i++) {
                 ArrayList<Food> foodsInfo = new ArrayList<>();
+                ArrayList<String> foodsNameInfo = new ArrayList<>();
+                foodNums = 0;
                 for (int j = 0; j < mealNames[i].length; j++) {
                     Food foodInfo = new Food(mealNames[i][j], mealPrice[i][j], mealType[i][j],foodImageID[i][j],j,foodNums);
                     foodsInfo.add(foodInfo);
+                    foodsNameInfo.add(foodInfo.getName());
                     foodNums++;
                 }
                 foodLists.add(foodsInfo);
+                foodNameLists.add(foodsNameInfo);
             }
             hasInitialized = true;
         }
@@ -163,17 +172,54 @@ public class MenuData extends Application {
         foodLists.get(mealType).get(position).setStock(stock);
     }
 
-    public ArrayList<ArrayList<String>> getFoodNameList() {
-        ArrayList<ArrayList<String>> foodNameList = new ArrayList<>();
-        for(int i=0; i<foodLists.size(); i++) {
-            ArrayList<String> arrayList = new ArrayList<>();
-            for(int j=0; j<foodLists.get(i).size(); j++) {
-                arrayList.add(foodLists.get(i).get(j).getName());
-            }
-            foodNameList.add(arrayList);
-        }
+    public String[][] getMealNames() {
+        return mealNames;
+    }
 
-        return foodNameList;
+    public void setMealNames(String[][] mealNames) {
+        this.mealNames = mealNames;
+    }
+
+
+    public double[][] getMealPrice() {
+        return mealPrice;
+    }
+
+    public void setMealPrice(double[][] mealPrice) {
+        this.mealPrice = mealPrice;
+    }
+
+    private double[][] mealPrice = {{12, 16},{36,40},{40,60},{20,10}};
+
+    public int[][] getMealType() {
+        return mealType;
+    }
+
+    public void setMealType(int[][] mealType) {
+        this.mealType = mealType;
+    }
+
+
+    public int[][] getFoodImageID() {
+        return foodImageID;
+    }
+
+    public void setFoodImageID(int[][] foodImageID) {
+        this.foodImageID = foodImageID;
+    }
+
+
+
+    public static int getFoodNums() {
+        return foodNums;
+    }
+
+    public static void setFoodNums(int foodNums) {
+        MenuData.foodNums = foodNums;
+    }
+
+    public ArrayList<ArrayList<String>> getFoodNameList() {
+        return foodNameLists;
     }
 
     private int changePageTitleToNum(String mealType) {
@@ -194,5 +240,15 @@ public class MenuData extends Application {
 
     public void setFoodSepciesUpdate(boolean foodSepciesUpdate) {
         this.foodSepciesUpdate = foodSepciesUpdate;
+    }
+
+    private void refreshFoodID() {
+        int foodNums = 0;
+        for(int i=0; i<foodLists.size(); i++) {
+            for(int j=0; j<foodLists.get(i).size(); j++) {
+                foodLists.get(i).get(j).setFoodID(foodNums);
+                foodNums++;
+            }
+        }
     }
 }

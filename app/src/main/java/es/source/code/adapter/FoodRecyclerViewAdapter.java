@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -56,6 +57,7 @@ public class FoodRecyclerViewAdapter extends RecyclerView.Adapter<FoodRecyclerVi
         holder.tvStockNum.setText(String.valueOf(food.getStock()));
 
         if (menuData.getFood(pageTitle, position).getSubmited() == GlobalConst.SUBMITTED) {
+            Log.i("Item positon", String.valueOf(position));
             holder.bOrderThisMeal.setText("退菜");
         } else {
             holder.bOrderThisMeal.setText("点菜");
@@ -124,11 +126,17 @@ public class FoodRecyclerViewAdapter extends RecyclerView.Adapter<FoodRecyclerVi
                 Intent intent = new Intent(context, FoodDetailed.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
                 intent.putExtra("page", menuData.getFood(pageTitle, position).getFoodID());
+                Log.i("Food ID:", String.valueOf(menuData.getFood(pageTitle,position).getFoodID()));
                 context.startActivity(intent);
                 Toast toast = Toast.makeText(getContext(), "点菜", Toast.LENGTH_SHORT);
                 toast.show();
             }
         }
+    }
+
+    public void addItem(int position,Food newFood) {
+//        foods.add(position, newFood);
+        notifyDataSetChanged();
     }
 
 }

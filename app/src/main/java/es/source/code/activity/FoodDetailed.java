@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
 
 import java.util.ArrayList;
 
@@ -33,8 +35,6 @@ public class FoodDetailed extends AppCompatActivity {
 
         menuData = (MenuData) getApplication();
         initContent();
-
-
 
         FragmentStatePagerAdapter myAdapter = new FragmentStatePagerAdapter(getSupportFragmentManager()) {
             private String[] tabNames = {"冷菜", "热菜", "海鲜", "酒水"};
@@ -70,6 +70,7 @@ public class FoodDetailed extends AppCompatActivity {
     private void initContent() {
         foodLists = menuData.getFoodLists();
         for (int i = 0; i < foodLists.size(); i++) {
+            Log.i("FoodDetailed foodlist size = ", String.valueOf(foodLists.get(i).size()));
             for (int j = 0; j < foodLists.get(i).size(); j++) {
                 FoodDetailedFragment foodDetailedFragment = new FoodDetailedFragment();
                 Bundle bundle = new Bundle();
@@ -78,5 +79,14 @@ public class FoodDetailed extends AppCompatActivity {
                 fragmentsLists.add(foodDetailedFragment);
             }
         }
+    }
+
+    public void addContent() {
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        this.finish();
     }
 }

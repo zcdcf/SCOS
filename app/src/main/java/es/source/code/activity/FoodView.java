@@ -2,7 +2,6 @@ package es.source.code.activity;
 
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -13,22 +12,18 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import es.source.code.adapter.FoodRecyclerViewAdapter;
 import es.source.code.fragment.MealFragment;
 import es.source.code.model.Food;
 import es.source.code.model.FoodStockInfo;
@@ -161,19 +156,21 @@ public class FoodView extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             Log.i("FoodView state:", "start to handle message");
-            if(msg.what==10) {
-                Log.i("FoodView state:", "get update info");
-                Bundle bundle = msg.getData();
-                ArrayList<ArrayList<FoodStockInfo>> foodStockList = new ArrayList<>();
-                for(int i=0; i<bundle.size(); i++) {
-                    foodStockList.add((ArrayList<FoodStockInfo>) bundle.get(String.valueOf(i)));
-                }
+            switch (msg.what) {
+                case GlobalConst.STOCK_HAS_UPDATE: {
+                    Log.i("FoodView state:", "get update info");
+                    Bundle bundle = msg.getData();
+                    ArrayList<ArrayList<FoodStockInfo>> foodStockList = new ArrayList<>();
+                    for (int i = 0; i < bundle.size(); i++) {
+                        foodStockList.add((ArrayList<FoodStockInfo>) bundle.get(String.valueOf(i)));
+                    }
 
-                refreshData(foodStockList);
-                for(int i=0; i<foodStockList.size(); i++) {
-                    for(int j=0; j<foodStockList.get(i).size(); j++) {
-                        FoodStockInfo foodStock= foodStockList.get(i).get(j);
-                        Log.i("stockInfo:",foodStock.getFoodName()+" "+foodStock.getStock());
+                    refreshStock(foodStockList);
+                    for (int i = 0; i < foodStockList.size(); i++) {
+                        for (int j = 0; j < foodStockList.get(i).size(); j++) {
+                            FoodStockInfo foodStock = foodStockList.get(i).get(j);
+                            Log.i("stockInfo:", foodStock.getFoodName() + " " + foodStock.getStock());
+                        }
                     }
                 }
             }
@@ -227,19 +224,23 @@ public class FoodView extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        Log.i("FoodView state:","unBind SeverObserverService");
-        unbindService(connection);
     }
 
-    private void refreshData(ArrayList<ArrayList<FoodStockInfo>> foodStockList) {
+    private void refreshStock(ArrayList<ArrayList<FoodStockInfo>> foodStockList) {
         for(int i=0; i<foodStockList.size(); i++) {
             for(int j=0; j<foodStockList.get(i).size(); j++) {
                 menuData.setStock(i,j,foodStockList.get(i).get(j).getStock());
             }
             if(vpFoodInfo.getCurrentItem() == i) {
-                fragmentLists.get(i).refreshData(foodStockList.get(i));
+                fragmentLists.get(i).refreshStock(foodStockList.get(i));
                 Log.i("Page", String.valueOf(i) + " data has refreshed");
             }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbindService(connection);
     }
 }

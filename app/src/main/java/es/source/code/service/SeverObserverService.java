@@ -14,6 +14,7 @@ import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 import android.os.Handler;
+import android.view.Menu;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,19 +40,19 @@ public class SeverObserverService extends Service {
             super.handleMessage(msg);
             switch (msg.what) {
                 case GlobalConst.BIND_MSG:
-                    Log.i("Service State:","get activity messenger");
+                    Log.i("Observer Service State:","get activity messenger");
                     activityMessenger = msg.replyTo;
                     break;
                 case GlobalConst.START_UPDATE_FOODINFO:
                     run = true;
                     updateThread = new UpdateThread();
                     updateThread.start();
-                    Log.i("Service State:", "start update");
+                    Log.i("Observer Service State:", "start update");
                     break;
                 case GlobalConst.STOP_UPDATE_FOODINFO:
                     run = false;
                     updateThread = null;
-                    Log.i("Service state:","stop update");
+                    Log.i("Observer Service state:","stop update");
                     break;
             }
         }
@@ -60,19 +61,17 @@ public class SeverObserverService extends Service {
 
     class UpdateThread extends Thread{
 
-        private ClassLoader PathClassLoader;
-
         @Override
         public void run() {
-            Log.i("Thread state:","start");
+            Log.i("Observer Thread state:","start");
             while(run) {
                 try {
-                    Log.i("Thread state:", "sleep");
+                    Log.i("Observer Thread state:", "sleep");
                     Bundle bundle = randomGenerateFoodStock();
                     if(bundle==null) {
                         Log.i("bundle content is ", "null");
                     } else {
-                        Log.i("service state:","get stockInfo");
+                        Log.i("Observer service state:","get stockInfo");
                         ActivityManager mActivityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
                         assert mActivityManager != null;
                         List<ActivityManager.RunningAppProcessInfo> lists = mActivityManager.getRunningAppProcesses();
@@ -83,9 +82,9 @@ public class SeverObserverService extends Service {
                                 msg.what = GlobalConst.STOCK_HAS_UPDATE;
                                 msg.setData(bundle);
                                 try {
-                                    Log.i("service state:", "try to send msg to FoodView"+bundle.size());
+                                    Log.i("Observer service state:", "try to send msg to FoodView"+bundle.size());
                                     activityMessenger.send(msg);
-                                    Log.i("service state:", "has send msg");
+                                    Log.i("Observer service state:", "has send msg");
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 } finally {
@@ -111,7 +110,7 @@ public class SeverObserverService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i("Service state:","onCreate()");
+        Log.i("Observer Service state:","onCreate()");
 
 /*        HandlerThread handlerThread = new HandlerThread("checkUpdate");
         handlerThread.start();*/
@@ -119,7 +118,7 @@ public class SeverObserverService extends Service {
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i("Service state:","onStartCommand()");
+        Log.i("Observer Service state:","onStartCommand()");
         if(activityMessenger !=null) {
             activityMessenger = (Messenger) intent.getExtras().get("messenger");
         }
@@ -129,21 +128,20 @@ public class SeverObserverService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i("Service state:","onDestroy()");
+        Log.i("Observer Service state:","onDestroy()");
     }
 
 
 
     public IBinder onBind(Intent intent) {
-        Log.i("Service state:","onBind()");
+        Log.i("Observer Service state:","onBind()");
         serviceMessenger = new Messenger(cMessageHandler);
         return serviceMessenger.getBinder();
     }
 
     private Bundle randomGenerateFoodStock() {
-        MenuData menuData = (MenuData) getApplication();
-        ArrayList<ArrayList<String>> foodNameList = menuData.getFoodNameList();
         double hasUpdate = Math.random();
+        MenuData menuData = (MenuData) getApplication();
         int stock;
 
         Bundle foodsStock;
@@ -151,17 +149,20 @@ public class SeverObserverService extends Service {
         Log.i("hasUpdate value",String.valueOf(hasUpdate));
         if(hasUpdate>0.4 && hasUpdate<0.6) {
             foodsStock = new Bundle();
-            for (int i = 0; i < foodNameList.size(); i++) {
+            ArrayList<ArrayList<String>> foodNameLists;
+            foodNameLists = menuData.getFoodNameList();
+            for (int i = 0; i < foodNameLists.size(); i++) {
                 ArrayList<FoodStockInfo> arrayList = new ArrayList<>();
-                for (int j = 0; j < foodNameList.get(i).size(); j++) {
+                for (int j = 0; j < foodNameLists.get(i).size(); j++) {
+                    Log.i("size = ", String.valueOf(foodNameLists.get(i).size()));
                     stock = (int) ( (Math.random()*100) % 5);   //generate a random stock
-                    FoodStockInfo foodStockInfo = new FoodStockInfo(foodNameList.get(i).get(j), stock);
+                    FoodStockInfo foodStockInfo = new FoodStockInfo(foodNameLists.get(i).get(j), stock);
                     arrayList.add(foodStockInfo);
                 }
                 foodsStock.putSerializable(String.valueOf(i),arrayList);
             }
         } else {
-            Log.i("service state:","not update");
+            Log.i("Observer service state:","not update");
             return null;
         }
 
