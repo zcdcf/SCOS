@@ -44,6 +44,8 @@ public class GlobalConst {
     public static final int FOODNAME_HAS_SEND = 4;
     public static final int REQUIRE_FOODNAME = 3;
 
+    public static final String BASE_URL = "http://10.168.183.161:8080";
+
     public static class NewFoodMessageEvent {
 
         boolean hasNewFood;
@@ -70,6 +72,17 @@ public class GlobalConst {
             this.newFood = newFood;
         }
 
+    }
 
+    public static class LoginMessageEvent {
+        boolean loginSuccess;
+
+        public LoginMessageEvent(boolean loginSuccess) {
+            this.loginSuccess = loginSuccess;
+        }
+
+        public boolean getLoginInfo() {
+            return this.loginSuccess;
+        }
     }
 }
