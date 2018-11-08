@@ -181,7 +181,7 @@ public class UpdateService extends IntentService {
         Intent intent = new Intent(this, FoodDetailed.class);
         intent.putExtra("page",newFood.getFoodID());
         Log.i(TAG,"Food ID = "+newFood.getFoodID());
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         notificationBuilder.setContentIntent(pendingIntent);
         notificationBuilder.setAutoCancel(true);
 

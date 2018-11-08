@@ -47,12 +47,13 @@ public class MenuData extends Application {
     private void initData() {
         if(!hasInitialized) {
             Log.i(TAG,"initialize the MenuData");
+            foodNums = 0;
             for (int i = 0; i < mealNames.length; i++) {
                 ArrayList<Food> foodsInfo = new ArrayList<>();
                 ArrayList<String> foodsNameInfo = new ArrayList<>();
-                foodNums = 0;
                 for (int j = 0; j < mealNames[i].length; j++) {
                     Food foodInfo = new Food(mealNames[i][j], mealPrice[i][j], mealType[i][j],foodImageID[i][j],j,foodNums);
+                    foodInfo.setFoodID(foodNums);
                     foodsInfo.add(foodInfo);
                     foodsNameInfo.add(foodInfo.getName());
                     foodNums++;
