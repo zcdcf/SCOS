@@ -53,8 +53,8 @@ public class FoodDetailedFragment extends Fragment {
         assert bundle != null;
         food = bundle.getParcelable("foodData");
 
-        tvDetailedFoodName.setText("菜名"+food.getName());
-        tvDetailedFoodPrice.setText("价格"+String.valueOf(food.getPrice()));
+        tvDetailedFoodName.setText("菜名:"+food.getName());
+        tvDetailedFoodPrice.setText("价格:"+String.valueOf(food.getPrice()));
         ivDetailedFoodImage.setImageResource(food.getImageId());
         if(food.getSubmited()==GlobalConst.SUBMITTED) {
             bDetailedSubmittedOrUn.setText("退点");

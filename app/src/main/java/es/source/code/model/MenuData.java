@@ -1,17 +1,15 @@
 package es.source.code.model;
 
 import android.app.Application;
-import android.support.constraint.solver.GoalRow;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import es.source.code.activity.R;
 
 public class MenuData extends Application {
 
+    private static final String TAG = "MenuData state:";
     private String[][] mealNames = {{"凉拌木耳","鸭舌"},{"红烧牛肉","童子鸡"},{"肉蟹煲","皮皮虾"},{"黄酒","啤酒"}};
     private int[][] mealType = {{0,0},{1,1},{2,2},{3,3}};
     private ArrayList<ArrayList<Food>> foodLists = new ArrayList<>();
@@ -22,7 +20,7 @@ public class MenuData extends Application {
     static private int foodNums = 0;
     private ArrayList<Food> submittedFoodList = new ArrayList<>();
     private ArrayList<Food> orderedFoodList = new ArrayList<>();
-    private boolean foodSepciesUpdate = false;
+    private boolean foodSpeciesUpdate = false;
 
     @Override
     public void onCreate() {
@@ -35,14 +33,20 @@ public class MenuData extends Application {
     }
 
     public void addNewFood(Food food) {
-        foodLists.get(food.getType()).add(food);
-        foodNameLists.get(food.getType()).add(food.getName());
-        refreshFoodID();
-        Log.i("foodNameList size = ", String.valueOf(foodNameLists.get(food.getType()).size()));
+        if(!hasExist(food)) {
+            Log.i(TAG,"Add new food in the menu");
+            foodLists.get(food.getType()).add(food);
+            foodNameLists.get(food.getType()).add(food.getName());
+            refreshFoodID();
+        } else {
+            Log.i(TAG,"the food has exist in the menu");
+        }
+        Log.i(TAG,"type"+food.getType()+ " List size = "+String.valueOf(foodNameLists.get(food.getType()).size()));
     }
 
     private void initData() {
         if(!hasInitialized) {
+            Log.i(TAG,"initialize the MenuData");
             for (int i = 0; i < mealNames.length; i++) {
                 ArrayList<Food> foodsInfo = new ArrayList<>();
                 ArrayList<String> foodsNameInfo = new ArrayList<>();
@@ -235,11 +239,11 @@ public class MenuData extends Application {
 
 
     public boolean isFoodSepciesUpdate() {
-        return foodSepciesUpdate;
+        return foodSpeciesUpdate;
     }
 
     public void setFoodSepciesUpdate(boolean foodSepciesUpdate) {
-        this.foodSepciesUpdate = foodSepciesUpdate;
+        this.foodSpeciesUpdate = foodSepciesUpdate;
     }
 
     private void refreshFoodID() {
@@ -247,8 +251,32 @@ public class MenuData extends Application {
         for(int i=0; i<foodLists.size(); i++) {
             for(int j=0; j<foodLists.get(i).size(); j++) {
                 foodLists.get(i).get(j).setFoodID(foodNums);
+                Log.i(TAG,foodLists.get(i).get(j).getName()+" ID is"+foodNums);
                 foodNums++;
             }
         }
+    }
+
+    // check if the food exist in the menu,if exist, update the stock
+    private boolean hasExist(Food food) {
+        for(int i=0; i<foodLists.size(); i++) {
+            for(int j=0; j<foodLists.get(i).size(); j++) {
+                if(foodLists.get(i).get(j).getName().equals(food.getName())) {
+                    foodLists.get(i).get(j).setStock(food.getStock());
+                    Log.i(TAG,food.getName()+ "stock has been changed to "+foodLists.get(i).get(j).getStock());
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public Food getFoodInfo(String name, int type) {
+        for(int i=0; i<foodLists.get(type).size(); i++) {
+            if(foodLists.get(type).get(i).getName().equals(name)) {
+                return foodLists.get(type).get(i);
+            }
+        }
+        return null;
     }
 }

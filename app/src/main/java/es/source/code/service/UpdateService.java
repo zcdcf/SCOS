@@ -8,29 +8,46 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.JobIntentService;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLDecoder;
 
 import es.source.code.activity.FoodDetailed;
 import es.source.code.activity.R;
-import es.source.code.fragment.MealFragment;
+import es.source.code.br.DeviceStartedListener;
 import es.source.code.model.Food;
 import es.source.code.model.GlobalConst;
 import es.source.code.model.MenuData;
 
 public class UpdateService extends IntentService {
 
-    private static final int NOTIFICATION_ID = 15;
-    public static final String COM_EXAMPLE_HFANG = "com.example.hfang";
+    public static final int NOTIFICATION_ID = 15;
+    private static final int DEFAULT_FOODID = 0;
+    private static final int FLAG_CANCEL = 101;
+    private static final int DEFAULT_FOOD_IMAGEID = R.drawable.scos_logo;
+    private static final String COM_EXAMPLE_HFANG = "com.example.hfang";
+    private static final String TAG = "UpdateService state:";
     private boolean run = true;
     private MenuData menuData;
     private String[] tabName = {"冷菜","热菜","海鲜","酒水"};
+    private String requestUrl = GlobalConst.BASE_URL+"/SCOSServer/FoodUpdateService";
+    private static final int REQUESTCODE = 1;
     UpdateThread updateThread;
 
     /**
@@ -45,15 +62,15 @@ public class UpdateService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i("UpdateService state:","get into onCreate");
+        Log.i(TAG,"get into onCreate");
 
         Log.i("System version", String.valueOf(Build.VERSION.SDK_INT));
         if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.i("UpdateService state:","starForeground");
+            Log.i(TAG,"starForeground");
             startMyOwnForeground();
         }
         menuData = (MenuData) getApplicationContext();
-        Log.i("UpdateService state:","onCreate");
+        Log.i(TAG,"onCreate");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -78,7 +95,7 @@ public class UpdateService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.i("UpdateService state:", "handle Intent");
+        Log.i(TAG, "handle Intent");
         updateThread = new UpdateThread();
         updateThread.start();
 
@@ -88,15 +105,39 @@ public class UpdateService extends IntentService {
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void run() {
-            Log.i("UpdateService state:","UpdateThread is running");
+            Log.i(TAG,"UpdateThread is running");
             while(run) {
-                Food newFood = randomGenerateNewFood();
-                if (newFood!=null) {
-                    updateMenu(newFood);
-                    updateView(newFood);
-                    newFood.setFoodID(menuData.getFoodLists().get(newFood.getType()).get(newFood.getPosition()).getFoodID());
-                    notifyUser(newFood);
-                    Log.i("UpdateService state:","add a new food");
+                JSONObject newFoodInfo;
+                try {
+                    String result = connectToServer();
+                    if(!result.equals("null")) {
+                        Log.i(TAG,result);
+                        newFoodInfo = new JSONObject(result);
+                        Log.i(TAG,newFoodInfo.toString());
+                        String name = null;
+                        try {
+                            name = URLDecoder.decode(newFoodInfo.getString("NAME"),"UTF-8");
+                            Log.i(TAG,"name is "+name);
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                        double price = newFoodInfo.getDouble("PRICE");
+                        int type = newFoodInfo.getInt("TYPE");
+                        int position = menuData.getFoodNameList().get(type).size();
+                        int stock = newFoodInfo.getInt("STOCK");
+                        Food newFood = new Food(name,price,type,DEFAULT_FOOD_IMAGEID,position,DEFAULT_FOODID);
+                        newFood.setStock(stock);
+                        updateMenuData(newFood);
+                        updateView(newFood);
+                        newFood = menuData.getFoodInfo(newFood.getName(),newFood.getType());
+                        if(newFood==null) {
+                            Log.i(TAG,"didn't find the food info in the MenuData");
+                        }
+                        notifyUser(newFood);
+                        Log.i(TAG,"add a new food");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
                 try {
                     Thread.sleep(3000);
@@ -107,8 +148,8 @@ public class UpdateService extends IntentService {
         }
     }
 
-    private void updateMenu(Food newFood) {
-        menuData.addNewFood(newFood);
+    private void updateMenuData(Food newFood) {
+         menuData.addNewFood(newFood);
     }
 
     private void updateView(Food newFood) {
@@ -116,23 +157,6 @@ public class UpdateService extends IntentService {
         EventBus.getDefault().postSticky(newFoodMessageEvent);
     }
 
-    private Food randomGenerateNewFood() {
-        double hasUpdate = Math.random();
-        Food newFood;
-        if(hasUpdate<0.6 && hasUpdate>0.4) {
-            int randomType = (int) (Math.random()*100) %4;
-            int length = menuData.getMealNames()[randomType].length;
-            int randomPosition = (int) (Math.random()*100)%length;
-            String name = menuData.getMealNames()[randomType][randomPosition];
-            int imageId = menuData.getFoodImageID()[randomType][randomPosition];
-            int id = MenuData.getFoodNums();
-            double price = menuData.getMealPrice()[randomType][randomPosition];
-            newFood = new Food("新"+name,price+10.0,randomType,imageId,length,id+1);
-        } else {
-            return null;
-        }
-        return newFood;
-    }
 
     private void notifyUser(Food newFood) {
         Notification.Builder notificationBuilder;
@@ -141,12 +165,22 @@ public class UpdateService extends IntentService {
         } else {
             notificationBuilder = new Notification.Builder(this);
         }
+
+        // intent used to cancel the notification
+        Intent closeIntent = new Intent(this,DeviceStartedListener.class);
+        closeIntent.putExtra("notification_id", NOTIFICATION_ID);
+        closeIntent.putExtra("action","close notification");
+        PendingIntent closeNotificationIntent = PendingIntent.getBroadcast(UpdateService.this, FLAG_CANCEL, closeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         notificationBuilder.setContentTitle("新品上架");
         notificationBuilder.setContentText(newFood.getName() + " " + newFood.getPrice() + "元 " + tabName[newFood.getType()]);
+        //noinspection deprecation
+        notificationBuilder.addAction(R.drawable.close_notification,"清除",closeNotificationIntent);
 
+        // intent to jump to the FoodDetail
         Intent intent = new Intent(this, FoodDetailed.class);
         intent.putExtra("page",newFood.getFoodID());
-        Log.i("Food ID = ",String.valueOf(newFood.getFoodID()));
+        Log.i(TAG,"Food ID = "+newFood.getFoodID());
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,0);
         notificationBuilder.setContentIntent(pendingIntent);
         notificationBuilder.setAutoCancel(true);
@@ -158,6 +192,53 @@ public class UpdateService extends IntentService {
         notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
         assert notificationManager != null;
         notificationManager.notify(NOTIFICATION_ID, notification);
+        playNotificationSound();
+    }
 
+    private void playNotificationSound() {
+        MediaPlayer mp = new MediaPlayer();
+        try {
+            mp.setDataSource(getApplicationContext(), getSystemDefaultRingtoneUri());
+            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);//音量跟随系统通知音量
+            mp.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mp.setVolume(1f, 1f);
+        mp.setLooping(false);
+        mp.start();
+    }
+
+    private Uri getSystemDefaultRingtoneUri() {
+        return RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION);
+    }
+
+
+    private String connectToServer() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            Log.i(TAG,"start the connect");
+            URL url = new URL(requestUrl+"?needUpdate="+REQUESTCODE);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            Log.i(TAG,"opened the connect");
+            Log.i(TAG,"response code = "+connection.getResponseCode());
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                Log.i(TAG,"Http OK");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String temp;
+                while ((temp = reader.readLine()) != null) {
+                    Log.i(TAG, "get response "+temp);
+                    sb.append(temp);
+                }
+                reader.close();
+            } else {
+                return "";
+            }
+            connection.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return sb.toString();
     }
 }

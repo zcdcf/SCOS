@@ -22,6 +22,7 @@ public class FoodDetailed extends AppCompatActivity {
     @BindView(R.id.vpDetailedFoodInfo)
     ViewPager vpDetailedFoodInfo;
 
+    private String TAG = "FoodDetailed state:";
     private ArrayList<FoodDetailedFragment> fragmentsLists = new ArrayList<>();
     private MenuData menuData;
     private ArrayList<ArrayList<Food>> foodLists;
@@ -30,6 +31,7 @@ public class FoodDetailed extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG,"onCreate");
         setContentView(R.layout.activity_food_detailed);
         ButterKnife.bind(this);
 
@@ -61,6 +63,7 @@ public class FoodDetailed extends AppCompatActivity {
         Intent intent = getIntent();
         if(intent!=null) {
             page = intent.getIntExtra("page",0);
+            Log.i(TAG,"get page is "+page);
         }
         if(page!=-1) {
             vpDetailedFoodInfo.setCurrentItem(page);
