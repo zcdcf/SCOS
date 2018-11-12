@@ -38,6 +38,7 @@ public class SeverObserverService extends Service {
     private ArrayList<Integer> foodListSize;
     private MenuData menuData;
     private Context context;
+    private int clientProcessID;
 
     @SuppressLint("HandlerLeak")
     private Handler cMessageHandler = new Handler() {
@@ -48,6 +49,7 @@ public class SeverObserverService extends Service {
                 case GlobalConst.BIND_MSG:
                     Log.i(TAG,"get activity messenger");
                     activityMessenger = msg.replyTo;
+                    clientProcessID = msg.getData().getInt("ProcessID");
                     break;
                 case GlobalConst.START_UPDATE_FOODINFO:
                     run = true;
@@ -92,7 +94,7 @@ public class SeverObserverService extends Service {
                         List<ActivityManager.RunningAppProcessInfo> lists = mActivityManager.getRunningAppProcesses();
 
                         for (ActivityManager.RunningAppProcessInfo info : lists) {
-                            if (info.pid == android.os.Process.myPid()) {
+                            if (info.pid == clientProcessID) {
                                 Message msg = new Message();
                                 msg.what = GlobalConst.STOCK_HAS_UPDATE;
                                 msg.setData(bundle);

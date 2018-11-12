@@ -102,6 +102,9 @@ public class FoodView extends AppCompatActivity {
             Message msg = new Message();
             msg.what = GlobalConst.BIND_MSG;
             msg.replyTo = activityMessenger;
+            Bundle bundle = new Bundle();
+            bundle.putInt("ProcessID",android.os.Process.myPid());
+            msg.setData(bundle);
             try {
                 serviceMessenger.send(msg);
             } catch (RemoteException e) {
