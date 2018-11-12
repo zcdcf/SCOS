@@ -34,6 +34,8 @@ import es.source.code.service.SeverObserverService;
 
 public class FoodView extends AppCompatActivity {
 
+    public static final String FOOD_LIST_SIZE = "foodListSize";
+    private static final String TAG = "FoodView state:";
     @BindView(R.id.vpFoodInfo)
     ViewPager vpFoodInfo;
     @BindView(R.id.tlFoodType)
@@ -166,12 +168,29 @@ public class FoodView extends AppCompatActivity {
                     }
 
                     refreshStock(foodStockList);
-                    for (int i = 0; i < foodStockList.size(); i++) {
+                    /*for (int i = 0; i < foodStockList.size(); i++) {
                         for (int j = 0; j < foodStockList.get(i).size(); j++) {
                             FoodStockInfo foodStock = foodStockList.get(i).get(j);
                             Log.i("stockInfo:", foodStock.getFoodName() + " " + foodStock.getStock());
                         }
+                    }*/
+                    break;
+                }
+                case GlobalConst.REQURIRE_FOOD_SIZE:{
+                    // send the foodlist size to SeverObserverService to generate random stock
+                    Log.i(TAG,"get the request to get foodlist size");
+                    Message message = new Message();
+                    Bundle bundle = new Bundle();
+                    ArrayList<Integer> foodListSize = menuData.getFoodListSize();
+                    bundle.putIntegerArrayList(FOOD_LIST_SIZE,foodListSize);
+                    message.setData(bundle);
+                    message.what = GlobalConst.RESPONSE_OF_FOOD_SIZE;
+                    try {
+                        serviceMessenger.send(message);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
                     }
+                    break;
                 }
             }
         }

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Random;
 
 import dalvik.system.PathClassLoader;
+import es.source.code.activity.FoodView;
 import es.source.code.model.FoodStockInfo;
 import es.source.code.model.GlobalConst;
 import es.source.code.model.MenuData;
@@ -30,8 +31,13 @@ import es.source.code.model.MenuData;
 
 public class SeverObserverService extends Service {
 
-    private boolean run = true;
+    private static final String TAG = "SeverObserverService state:";
+    private boolean run = false;
+    private boolean getResponse = false;
     private UpdateThread updateThread;
+    private ArrayList<Integer> foodListSize;
+    private MenuData menuData;
+    private Context context;
 
     @SuppressLint("HandlerLeak")
     private Handler cMessageHandler = new Handler() {
@@ -40,19 +46,26 @@ public class SeverObserverService extends Service {
             super.handleMessage(msg);
             switch (msg.what) {
                 case GlobalConst.BIND_MSG:
-                    Log.i("Observer Service State:","get activity messenger");
+                    Log.i(TAG,"get activity messenger");
                     activityMessenger = msg.replyTo;
                     break;
                 case GlobalConst.START_UPDATE_FOODINFO:
                     run = true;
+                    menuData = (MenuData) getApplication();
                     updateThread = new UpdateThread();
                     updateThread.start();
-                    Log.i("Observer Service State:", "start update");
+                    Log.i(TAG, "start update");
                     break;
                 case GlobalConst.STOP_UPDATE_FOODINFO:
                     run = false;
                     updateThread = null;
-                    Log.i("Observer Service state:","stop update");
+                    Log.i(TAG,"stop update");
+                    break;
+                case GlobalConst.RESPONSE_OF_FOOD_SIZE:
+                    Log.i(TAG,"get FoodView Response");
+                    Bundle bundle = msg.getData();
+                    foodListSize = bundle.getIntegerArrayList(FoodView.FOOD_LIST_SIZE);
+                    getResponse = true;
                     break;
             }
         }
@@ -64,6 +77,7 @@ public class SeverObserverService extends Service {
         @Override
         public void run() {
             Log.i("Observer Thread state:","start");
+            Log.i(TAG, "pid is"+String.valueOf(android.os.Process.myPid()));
             while(run) {
                 try {
                     Log.i("Observer Thread state:", "sleep");
@@ -72,6 +86,7 @@ public class SeverObserverService extends Service {
                         Log.i("bundle content is ", "null");
                     } else {
                         Log.i("Observer service state:","get stockInfo");
+                        // check if process is running
                         ActivityManager mActivityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
                         assert mActivityManager != null;
                         List<ActivityManager.RunningAppProcessInfo> lists = mActivityManager.getRunningAppProcesses();
@@ -98,6 +113,8 @@ public class SeverObserverService extends Service {
                     }
                 }catch (InterruptedException e) {
                     e.printStackTrace();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
                 }
 
             }
@@ -122,6 +139,7 @@ public class SeverObserverService extends Service {
         if(activityMessenger !=null) {
             activityMessenger = (Messenger) intent.getExtras().get("messenger");
         }
+        flags = START_STICKY;
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -139,24 +157,32 @@ public class SeverObserverService extends Service {
         return serviceMessenger.getBinder();
     }
 
-    private Bundle randomGenerateFoodStock() {
+    private Bundle randomGenerateFoodStock() throws RemoteException {
         double hasUpdate = Math.random();
-        MenuData menuData = (MenuData) getApplication();
+        Message msgRequireFoodListSize = new Message();
+        msgRequireFoodListSize.what = GlobalConst.REQURIRE_FOOD_SIZE;
+        activityMessenger.send(msgRequireFoodListSize);
+
+//        menuData = (MenuData) getApplication();
+//        foodListSize = menuData.getFoodListSize();
         int stock;
 
+        getResponse = false;
         Bundle foodsStock;
         //test if need update
         Log.i("hasUpdate value",String.valueOf(hasUpdate));
-        if(hasUpdate>0.4 && hasUpdate<0.6) {
+
+        while (!getResponse) {
+            Log.i(TAG,"wait for the response");
+        }
+        if(hasUpdate>0.4 || hasUpdate<0.6) {
             foodsStock = new Bundle();
-            ArrayList<ArrayList<String>> foodNameLists;
-            foodNameLists = menuData.getFoodNameList();
-            for (int i = 0; i < foodNameLists.size(); i++) {
+            for (int i = 0; i < GlobalConst.FOOD_TYPE_SIZE; i++) {
                 ArrayList<FoodStockInfo> arrayList = new ArrayList<>();
-                for (int j = 0; j < foodNameLists.get(i).size(); j++) {
-                    Log.i("size = ", String.valueOf(foodNameLists.get(i).size()));
+                Log.i("size = ", String.valueOf(foodListSize.get(i)));
+                for (int j = 0; j < foodListSize.get(i); j++) {
                     stock = (int) ( (Math.random()*100) % 5);   //generate a random stock
-                    FoodStockInfo foodStockInfo = new FoodStockInfo(foodNameLists.get(i).get(j), stock);
+                    FoodStockInfo foodStockInfo = new FoodStockInfo(j, stock);
                     arrayList.add(foodStockInfo);
                 }
                 foodsStock.putSerializable(String.valueOf(i),arrayList);

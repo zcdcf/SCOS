@@ -3,11 +3,11 @@ package es.source.code.model;
 import java.io.Serializable;
 
 public class FoodStockInfo implements Serializable {
-    private String foodName;
+    private int positionInType;
     private int stock;
 
-    public FoodStockInfo(String foodName, int stock) {
-        this.foodName = foodName;
+    public FoodStockInfo(int positionInType, int stock) {
+        this.positionInType = positionInType;
         this.stock = stock;
     }
 
@@ -19,12 +19,5 @@ public class FoodStockInfo implements Serializable {
         this.stock = stock;
     }
 
-    public String getFoodName() {
-        return foodName;
-    }
-
-    public void setFoodName(String foodName) {
-        this.foodName = foodName;
-    }
 
 }

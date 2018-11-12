@@ -16,6 +16,13 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,9 +34,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import es.source.code.activity.FoodDetailed;
 import es.source.code.activity.R;
+import es.source.code.bean.BeanFood;
 import es.source.code.br.DeviceStartedListener;
 import es.source.code.model.Food;
 import es.source.code.model.GlobalConst;
@@ -47,7 +58,7 @@ public class UpdateService extends IntentService {
     private MenuData menuData;
     private String[] tabName = {"冷菜","热菜","海鲜","酒水"};
     private String requestUrl = GlobalConst.BASE_URL+"/SCOSServer/FoodUpdateService";
-    private static final int REQUESTCODE = 1;
+    private static final int REQUESTCODE = GlobalConst.TEST_XML;
     UpdateThread updateThread;
 
     /**
@@ -225,20 +236,84 @@ public class UpdateService extends IntentService {
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 Log.i(TAG,"Http OK");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
                 String temp;
                 while ((temp = reader.readLine()) != null) {
-                    Log.i(TAG, "get response "+temp);
+                    Log.i(TAG, "get response " + temp);
                     sb.append(temp);
                 }
                 reader.close();
+                switch (REQUESTCODE) {
+                    case GlobalConst.GET_FOOD_UPDATE: {
+                        Log.i(TAG,"get food Update");
+                        break;
+                    }
+                    case GlobalConst.TEST_JSON:{
+                        Log.i(TAG,"test json");
+
+                        Log.i(TAG,"JSON stream length is "+sb.length());
+                        long startTime=System.currentTimeMillis();
+                        List<BeanFood> foodList = JSON.parseArray(sb.toString(),BeanFood.class);
+                        long finishTime=System.currentTimeMillis();
+
+                        Log.i(TAG,"parse json runtime = "+(finishTime-startTime)+"ms");
+                        Log.i(TAG,"size = "+foodList.size());
+
+                        for(int i=0; i<foodList.size(); i++) {
+                            Log.i(TAG,foodList.get(i).toString());
+                        }
+
+                        // return the first JSONobj as update information
+                        JSONObject firstObj = getFirstEleAsJsonObject(foodList);
+                        return firstObj.toString();
+                    }
+                    case GlobalConst.TEST_XML:{
+                        Log.i(TAG,"test xml");
+                        Log.i(TAG,"XML stream length is "+sb.length());
+
+                        // parse the xml string
+                        long startTime = System.currentTimeMillis();
+                        Document document = DocumentHelper.parseText(sb.toString());
+                        Element root = document.getRootElement();
+                        Iterator iterator = root.elementIterator();
+                        List<BeanFood> foodList = new ArrayList<>();
+                        while (iterator.hasNext()) {
+                            Element son = (Element) iterator.next();
+                            BeanFood newFood = new BeanFood();
+                            newFood.setNAME(son.elementText("NAME"));
+                            newFood.setPRICE(Double.parseDouble(son.elementText("PRICE")));
+                            newFood.setSTOCK(Integer.parseInt(son.elementText("STOCK")));
+                            newFood.setTYPE(Integer.parseInt(son.elementText("TYPE")));
+                            foodList.add(newFood);
+                        }
+                        long finishTime = System.currentTimeMillis();
+                        Log.i(TAG,"parse xml runtime = "+(finishTime-startTime)+"ms");
+                        Log.i(TAG,"size = "+foodList.size());
+                        JSONObject firstObj = getFirstEleAsJsonObject(foodList);
+                        return firstObj.toString();
+                    }
+                }
             } else {
                 return "";
             }
             connection.disconnect();
-        } catch (IOException e) {
+        } catch (IOException | DocumentException e) {
             e.printStackTrace();
         }
 
         return sb.toString();
+    }
+
+    private JSONObject getFirstEleAsJsonObject(List<BeanFood> foodList) {
+        JSONObject firstObj = new JSONObject();
+        try {
+            firstObj.put("NAME",foodList.get(0).getNAME());
+            firstObj.put("STOCK",foodList.get(0).getSTOCK());
+            firstObj.put("PRICE",foodList.get(0).getPRICE());
+            firstObj.put("TYPE",foodList.get(0).getTYPE());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return firstObj;
     }
 }

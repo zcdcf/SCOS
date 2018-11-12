@@ -63,7 +63,7 @@ public class FoodRecyclerViewAdapter extends RecyclerView.Adapter<FoodRecyclerVi
             holder.bOrderThisMeal.setText("点菜");
         }
 
-        if(menuData.getFood(pageTitle,position).getStock() == 0) {
+        if(holder.tvStockNum.getText().equals("0")) {
             holder.bOrderThisMeal.setClickable(false);
         } else {
             holder.bOrderThisMeal.setClickable(true);
@@ -71,7 +71,7 @@ public class FoodRecyclerViewAdapter extends RecyclerView.Adapter<FoodRecyclerVi
         holder.bOrderThisMeal.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (holder.bOrderThisMeal.getText().equals("点菜")) {
+                if (holder.bOrderThisMeal.getText().equals("点菜") && !holder.tvStockNum.getText().equals("0")) {
                     Toast toast = Toast.makeText(getContext(), "点菜成功", Toast.LENGTH_SHORT);
                     toast.show();
                     holder.bOrderThisMeal.setText("退菜");
@@ -79,6 +79,8 @@ public class FoodRecyclerViewAdapter extends RecyclerView.Adapter<FoodRecyclerVi
                     menuData.addCount(pageTitle, position);
                     menuData.decreaseStock(pageTitle, position);
                     notifyDataSetChanged();
+                } else if(holder.bOrderThisMeal.getText().equals("点菜") && holder.tvStockNum.getText().equals("0")) {
+                    Toast.makeText(context,"没有库存",Toast.LENGTH_SHORT).show();
                 } else if (holder.bOrderThisMeal.getText().equals("退菜")) {
                     Toast toast = Toast.makeText(getContext(), "退菜成功", Toast.LENGTH_SHORT);
                     toast.show();

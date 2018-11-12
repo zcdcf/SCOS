@@ -1,6 +1,7 @@
 package es.source.code.model;
 
 import android.app.Application;
+import android.os.Bundle;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class MenuData extends Application {
         super.onCreate();
         initData();
     }
+
 
     public ArrayList<ArrayList<Food>> getFoodLists() {
         return foodLists;
@@ -279,5 +281,13 @@ public class MenuData extends Application {
             }
         }
         return null;
+    }
+    public ArrayList<Integer> getFoodListSize() {
+        ArrayList<Integer> foodListSize = new ArrayList<>();
+        for(int i=0; i<foodNameLists.size(); i++) {
+            foodListSize.add(foodNameLists.get(i).size());
+        }
+
+        return foodListSize;
     }
 }

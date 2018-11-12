@@ -27,6 +27,7 @@ public class SCOSEntry extends AppCompatActivity {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
+        Log.i("SCOS pid is", String.valueOf(android.os.Process.myPid()));
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:startX = event.getX();
                                          Log.i("startX:",startX+" ");

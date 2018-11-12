@@ -44,6 +44,15 @@ public class GlobalConst {
     public static final int FOODNAME_HAS_SEND = 4;
     public static final int REQUIRE_FOODNAME = 3;
 
+    public static final int REQURIRE_FOOD_SIZE = 3;
+    public static final int RESPONSE_OF_FOOD_SIZE = 4;
+
+    public static final int FOOD_TYPE_SIZE = 4;
+
+    public static final int GET_FOOD_UPDATE = 1;
+    public static final int TEST_JSON = 2;
+    public static final int TEST_XML = 3;
+
     public static final String BASE_URL = "http://10.168.183.161:8080";
 
     public static class NewFoodMessageEvent {
